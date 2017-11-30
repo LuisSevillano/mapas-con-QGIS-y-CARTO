@@ -18,6 +18,7 @@ La metodología del módulo consistirá en ir conociendo las posibilidades que n
   - [Subir datos a CARTO](#upload-carto). Aprenderemos a subir tanto archivos `csv` como `shp`.
   - [Mapa de la Tasa de Paro por provincias con CARTO](#make-carto).
   - [Realizar una unión entre dos tablas en CARTO](#join-carto).
+  - [Añadir widgets en CARTO](#widget-carto).
   
 * [**Conversión**](#conversion) entre sistemas de coodenadas diferentes.
 
@@ -120,7 +121,7 @@ El siguiente paso que vamos a realizar es extraer el código del INE de los shap
   - Si vamos a subir este shapefile a CARTO es una buena oportunidad para utilizar [Mapshaper](#mapshaper) para reducir el peso del archivo.
 
 #### <a name="add-csv">Añadir un csv externo para asignar sus datos a polígonos</a>
-A continuación vamos a cargar los datos que queremos asociar a cada municipio. Vamos a utilizar los datos del [Revisión del padrón municipal a 1 de enero de 2017](http://www.ine.es/dynt3/inebase/index.htm?padre=525). Los datos vienen divididos por provincias pero el primero de ellos incluye los datos de todos los municipios. Este archivo requiere de una pequeña manipulación para extrar el código de municipio (`código de provincia + código de municipio`). Este cálculo podemos hacerlo en Excel, libre office o incluso en QGIS. Podéis procesar los datos y guardarlos como csv o bien utilizar el csv de la carpeta `data` del repositorio.   
+A continuación vamos a cargar los datos que queremos asociar a cada municipio. Vamos a utilizar los datos del [Revisión del padrón municipal a 1 de enero de 2017](http://www.ine.es/dynt3/inebase/index.htm?padre=525). Los datos vienen divididos por provincias pero el primero de ellos incluye los datos de todos los municipios. Este archivo requiere de una pequeña manipulación para extrar el código de municipio (`código de provincia + código de municipio`). Este cálculo podemos hacerlo en Excel, libre office o incluso en QGIS. Podéis procesar los datos y guardarlos como csv o bien utilizar el csv `poblacion_municipios.csv` de la carpeta `data` del repositorio.   
 
  QGIS tiene una opción muy completa para añadir capas de texto delimitado (`csv`, `tsv`, etc.). Pero si queremos que los campos sean tratados como texto (y no elimine los ceros por la izquierda) necesitamos incluir un archivo en el mismo directorio cuya extensión incluya una `t` (de `type`) al final. Por ejemplo, si el archivo se llama `data.csv`, tenemos que crear un archivo llamado `data.csvt`. Dentro de este archivo debemos especificar la naturaleza de los campos: si queremos que todas las columnas sean tratadas como texto (`String`) este archivo deberá tener el siguiente contenido (`"String"`,`"String"`,...) una por cada columna. Si queremos que sean números enteros:`int`, decimales: `real`, etc.
  
@@ -176,11 +177,31 @@ Una vez que nos hayamos registrado en la plataforma tenemos acceso a unos 500Mb 
   - Sólo tenemos que escoger el estilo más adecuado para nuestro mapa: `Light`, `Dark`, etc.
   - En el apartado `Show items`, seleccionar los campos que queremos mostrar en la ventana de información.  
   - El panel `POP-UP` también ofrece la posibilidad de dar estilo al `pop-up` mediante html si pulsamos sobre el `switch` `HTML`.
+  
+15. Añadir una leyenda:
+  - En la pestaña `LEGEND` podemos seleccionar el tipo de leyenda que queremos mostrar.
+  - Podemos customizar el título de la leyenda.
+  - Podemos añadir subijos o prefijos a los valores.
+  - También podemos añadir elementos mediante HTML.
+
 
 #### <a name="join-carto">Realizar una unión entre dos tablas en CARTO</a>
 En este apartado vamos a aprender a realizar un _join_ o unión entre dos tablas en CARTO. Vamos a realizar un mapa de la tasa de población femenina por municipios.  
 Para realizar esta parte del módulo tienes que haber creado un shapefile de los municipios en el que esté el código del INE como hemos aprendido en el apartado [**Manipulación de archivos shp**](#vector).  
+También recomendamos simplificar la geometría de los shapefiles que vayamos a subir a CARTO para ahorrarnos espacio de almacenamiento.
+1. Subimos el csv `poblacion_municipios.csv` de la carpeta `data` del repositorio. Es un csv con los datos de la [Revisión del padrón municipal a 1 de enero de 2017](http://www.ine.es/dynt3/inebase/index.htm?padre=525) que tiene tres columnas preprocesadas: `cod_ine`, `tasa_varones`, `tasa_mujeres`.
+2. Subimos el archivo shp de municipios comprimido y simplificado mediante Mapshaper.
+3. En nuestro Dashboard pulsamos sobre el Dataset que contiene los polígonos de los municipios y pulsamos sobre `CREATE MAP`.
+4. Una vez sobre el mapa pulsamos sobre la capa de los polígonos.
+5. En la pestaña análisis, seleccionamos el tipo de análisis `Join columns from 2nd layer` y `ADD ANALYSIS`.
+6. En el apartado **[2] Join columns from 2nd layer** tenemos que seleccionar con que otro dataset queremos hacer el join. En este caso seleccionamos el csv con los datos de población.
+7. En el apartado **[3] Key columns** indicamos cuáles van a ser las columnas de los respectivos dataset mediante las que vamos a realizar la unión entre las dos tablas. En este caso, será el campo que contenga el código del INE.
+8. En el apartado **[4] Output data** seleccionamos qué campos queremos conservar de cada dataset para la nueva tabla que va a resultar de esta unión. En este caso podemos seleccionar el nombre del municipio de la capa de los polígonos `NAMEUNIT` y de la capa del `csv` la población total, ṕoblación de hombres y mujeres y tasa de hombres y tasa de mujeres. Aplicamos el análisis pulsando en el botón `APPLY`.
+9. Por último, sólo nos queda aplicar una escala de color en función del campo que queramos representar en la pestaña `STYLE`.  
+10. Podemos customizar un `pop-up` para mostrar los datos que queramos.
 
+
+#### <a name="widget-carto">Añadir widgets en CARTO</a>
 
 ## <a name="conversion">Conversión entre sistemas de coordenadas</a>
 La complejidad que supone representar una esfera sobre un plano ha supuesto la creación de diferentes maneras de representar un punto sobre un plano. Aunque existen varios sistemas para representar la información sobre un plano, vamos a centrarnos en dos de los principales sistemas de coordenadas en metros (UTM) y en grados (Lon/Lat).
