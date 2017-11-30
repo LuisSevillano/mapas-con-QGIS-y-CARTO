@@ -5,14 +5,19 @@ La metodología del módulo consistirá en ir conociendo las posibilidades que n
 * [**El Color**](#color): la utilización del color es fundamental a la hora de dar estilo a un mapa. La elección de una paleta de colores adecuada, así como de la escala correcta es fundamental a la hora de comunicar la información.
 * [**Fuentes de información**](#sources): dónde podemos encontrar datos GIS para crear mapas: IGN, Natural Earth, OSM y Geofabrik entre otros.
 * Ser capaces de crear **mapas de puntos**. Nos sirven para geolocalizar acontecimientos como estaciones de servicio, de bicicleta pública, un accidente o un acontecimiento de última hora.
-* [**Manipulación de archivos shp**](#vector). Realizar procesos de manipulación de archivos de tipo Shape (shp), filtrado en base a atributos o unir diferentes archivos.
-  - [#](#download-lineas-limite) Obtener los shapefiles oficiales de los diferentes niveles administrativos de España.
-  - [#](#from-etrs90-to-wgs84) Conversión a un tipo de sistema de coordenadas diferente.
-  - [#](#merge) Unir o mergear dos archivos shapefile en uno solo.
-  - [#](#get-ine-code) Extracción de información de un campo con la calculadora de campos.
-  <!-- - [#](#join-csv) Realizar _joins_ o uniones entre un shapefile y un csv. -->
-  - [#](#get-geometry-area) Extracción de información sobre geometería del polígono con la calculadora de campos.
+* [**Manipulación de archivos shp**](#vector). Realizar procesos de manipulación de archivos vectoriales, operaciones con atributos, uniones entre shapefiles o asígnación de datos externos a un shapefile.
+  - [Descarga de los shapefiles oficiales](#download-lineas-limite): Obtener los shapefiles oficiales de los diferentes niveles administrativos de España.
+  - [Conversión a un tipo de sistema de coordenadas diferente](#from-etrs90-to-wgs84).
+  - [Unir o mergear dos archivos shapefile en uno solo](#merge).
+  - [Realizar cálculos con los campos de la tabla de atributos](#get-ine-code): extracción de información de un campo con la calculadora de campos para obtener el código del INE.
+  - [Añadir un csv externo](#add-csv): asignar datos de un `csv` a polígonos como municipios, provincias, etc.
+  - [Join entre capas](#join-csv) Realizar _joins_ o uniones entre un shapefile y un csv.
+  - [Extracción de información sobre geometería](#get-geometry-area): calcular el área de un polígono con la calculadora de campos.
   
+* [**Crear un mapa con CARTO**](#carto)
+  - [Subir datos a CARTO](#upload-carto). Aprenderemos a subir tanto archivos `csv` como `shp`.
+  - [Mapa de la Tasa de Paro por provincias con CARTO](#make-carto).
+  - [Realizar una unión entre dos tablas en CARTO](#join-carto).
   
 * [**Conversión**](#conversion) entre sistemas de coodenadas diferentes.
 
@@ -38,6 +43,14 @@ En las siguientes páginas se pueden descargar shapefiles y archivos _raster_ de
 [Mapshaper](http://mapshaper.org/) es una herramienta open source desarrollada por [Mathew Bloch](https://github.com/mbloch). Además de una aplicación por [línea de comandos](https://github.com/mbloch/mapshaper/wiki/Introduction-to-the-Command-Line-Tool) que nos permite manipular archivos Shapefile, GeoJSON, TopoJSON, CSV entre otros formatos, también cuenta con una interfaz web. Podemos utilizar Mapshaper para reducir el peso de los archivos shapefile.   
 
 Cuando estamos trabajando en un mapa que va ser publicado en la web, el peso de los archivos es muy importante. Además, servicios como CARTO tienen un límite de almacenamiento gratuito.
+1. Para reducir el peso de un shapefile podemos arrastrar el conjunto de archivos comprimidos a la web.
+  - . Si tienes los archivos sin comprimir, simplemente selecciona todos los archivos, `.dbf`, `.shp`, `.prj`, `.qpj`, `.shx` y comprimelos juntos.
+2. Seleccionamos `import`.
+3. Seleccionamos en el botón `Simplify`. Mapshaper nos ofrece varios algoritmos de simplificación (reduce el peso del archivo eliminando puntos). Podemos dejar las opciones por defecto → `Apply`.
+4. A continuación aplicamos un porcentaje de Simplificación. Un 20% será suficiente como para reducir el peso del archivo aproximadamente 30Mb (en función del archivo).
+5. Si ha encontrado errores (aparece un `warning` arriba a la derecha) podemos seleccionar la opción `repair`.
+6. Por último, exportamos el archivo en formato `shp`.
+
 
 ## <a name="vector">Manipulación de archivos shp</a>
 En este apartado vamos a aprender a realizar varias operaciones básicas con QGIS. Nuestro objetivo final será crear un mapa de la densidad de población por municipio en España.
@@ -84,7 +97,8 @@ El siguiente paso que vamos a realizar es extraer el código del INE de los shap
 
  Para éste propósito contamos con la `calculadora de campos` ![field_calculator_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/field_calculator_icon.png). Hacemos click sobre el icono. Vamos a extraer una cadena de texto de uno de los campos de la tabla de atributos y a crear una nueva columna con el resultado.
  
- 1. Introducimos el nombre que vamos a dar a la nueva columna en la tabla de atributos, por ejemplo `cod_ine`. Si queremos que el resultado de esta operación sea una cadena de texto y por lo tanto que conserve los ceros por la izquierda (`04004` vs ~~`4004`~~) tenemos que seleccionar el tipo de campo de salida como `Texto` (cadena). De lo contrario dejamos el valor `Numero enterio (int)` por defecto.
+ 1. Introducimos el nombre que vamos a dar a la nueva columna en la tabla de atributos, por ejemplo `cod_ine`. Si queremos que el resultado de esta operación sea una cadena de texto y por lo tanto que conserve los ceros por la izquierda (`04004` vs ~~`4004`~~) tenemos que seleccionar el tipo de campo de salida como `Texto` (cadena). De lo contrario dejamos el valor `Numero enterio (int)` por defecto. Dado que en este tutorial vamos a subir después los datos a CARTO, podemos crear una columna en la que el código del INE tenga ceros por la izquierda y otra en la que no.
+ 
 
  2. Todos los desplegables de la derecha nos permiten ir construyendo una consulta a la tabla de atributos, una _query_, cuyo resultado será el nuevo campo. Además, nos permiten consultar la documentación asociada a cada función en la caja de la derecha.   
 
@@ -103,15 +117,70 @@ El siguiente paso que vamos a realizar es extraer el código del INE de los shap
   Si en algún momento de este proceso nos equivocamos deberemos eliminar el campo y crear uno nuevo o actualizarlo en la opción superior derecha `actualizar campo existente` (tan sólo podremos actualizar el contenido, no la naturaleza del campo). Al finalizar deberemos salvar desde la tabla de atributos ![save_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/save_icon.png).
  4. Ya tenemos el codigo del INE para cada municipio.
  5. Ahora podemos continuar con el tutorial para ver cómo generar un nuevo campo con el área del municipio o subir este shapefile a CARTO y mergearlo con algunos datos que tengamos a nivel municipal.
+  - Si vamos a subir este shapefile a CARTO es una buena oportunidad para utilizar [Mapshaper](#mapshaper) para reducir el peso del archivo.
 
-<!--
-#### <a name="join-csv">Realizar _joins_ o uniones entre un shapefile y un csv</a> -->
+#### <a name="add-csv">Añadir un csv externo para asignar sus datos a polígonos</a>
+A continuación vamos a cargar los datos que queremos asociar a cada municipio. Vamos a utilizar los datos del [Revisión del padrón municipal a 1 de enero de 2017](http://www.ine.es/dynt3/inebase/index.htm?padre=525). Los datos vienen divididos por provincias pero el primero de ellos incluye los datos de todos los municipios. Este archivo requiere de una pequeña manipulación para extrar el código de municipio (`código de provincia + código de municipio`). Este cálculo podemos hacerlo en Excel, libre office o incluso en QGIS. Podéis procesar los datos y guardarlos como csv o bien utilizar el csv de la carpeta `data` del repositorio.   
+
+ QGIS tiene una opción muy completa para añadir capas de texto delimitado (`csv`, `tsv`, etc.). Pero si queremos que los campos sean tratados como texto (y no elimine los ceros por la izquierda) necesitamos incluir un archivo en el mismo directorio cuya extensión incluya una `t` (de `type`) al final. Por ejemplo, si el archivo se llama `data.csv`, tenemos que crear un archivo llamado `data.csvt`. Dentro de este archivo debemos especificar la naturaleza de los campos: si queremos que todas las columnas sean tratadas como texto (`String`) este archivo deberá tener el siguiente contenido (`"String"`,`"String"`,...) una por cada columna. Si queremos que sean números enteros:`int`, decimales: `real`, etc.
+ 
+ Como esta opción es un poco complicada, aunque conviene conocerla, también podemos ahorrarnos este paso y añadir el csv como hemos hecho con los shapefiles, como si fuera una capa vectorial (añadir capa vectorial).
+ 
 
 #### <a name="get-geometry-area">Extracción de información sobre geomtería del polígono con la calculadora de campos</a>
 La calculadora de campos de QGIS nos ofrece funciones relacionadas con la geomtría y la geodesia que vamos a utilizar. Estas funciones las podemos encontrar en el apartado **Geomgetría** de la calculadora de campos. A continuación vamos a ver cómo podemos calcular el área de un polígono.
 1. El proceso es parecido al que seguimos para crear un nuevo campo.
 2. Seleccionamos el nombre de la nueva columna, su naturaleza.
 3. Por último, seleccionamos la opción $area del apartado Geometría (podemos utilizar el buscador).
+
+## <a name="carto">Crear un mapa con CARTO</a>
+
+#### <a name="upload-carto">Subir datos a CARTO</a>
+Una vez que nos hayamos registrado en la plataforma tenemos acceso a unos 500Mb de almacenamiento gratuito. Podemos añadir tanto archivos csv como shapefiles. Teniendo en cuenta que estos últimos suelen ser bastante pesados, la mejor opción será subirlos una sola vez y utilizar siempre el mismo dataset de origen para crear nuevos mapas.
+1. Para subir un nuevo archivo a CARTO deberemos ir a la pestaña `Datasets`.
+2. En esta interfaz podemos arrastrar el archivo que queramos subir o podemos utilizar otros servicios si hacemos click en la opción `NEW DATASET`. En esta pestaña también podemos _soltar_ un archivo encima, abrir una ventana para seleccionarlo en nuestro sistema, conectar con un Spreasheet de Google Drive, Dropbox, etc.
+3. Seleccionamos en `CONNECT DATASET`. Carto Geolocalizará automaticamente aquellos elementos que pueda reconocer por alguno de los campos de la tabla.
+4. Automáticamente todos los dataset que subimos a CARTO se almacenan en la pestaña de `Datasets`. Aquí podemos variar las opciones de nuestros dataset. Podemos añadr descripciones, cambiar el nombre, hacerlos públicos, añadir `tags` para clasificarlos, ordenarlos por número de visitas, etc.
+5. Vamos a subir un dataset con los últimos datos sobre la [Tasa de Paro por provincias del INE](http://www.ine.es/jaxiT3/Tabla.htm?t=3996). Los datos requieren de una pequeña manipulación. Podemos utilizar el dataset `tasa_de_paro_provincias.csv` que se encuentra en la carpeta `data` del repositorio.
+6. Para crear un coropleta sobre la Tasa de Paro por provincias accede al siguiente apartado [Mapa de la Tasa de Paro por provincias con CARTO](#make-carto).
+
+#### <a name="make-carto">Mapa de la Tasa de Paro por provincias con CARTO</a>
+1. Si ya tenemos el dataset de la Tasa de Paro por provincias en nuestro Dashboard pinchamos sobre él y después sobre la opción `Create map`.
+2. Si tienes un shapefile de provincias, ve a las sección [Realizar una unión entre dos tablas en CARTO](#join-carto). De lo contrario, continúa con este apartado.
+3. En un primer momento, no vemos ninguna geometría asociada a nuestros datos y sobre la capa aparece un pequeño icono de warning que nos dice `Layer doesn't have geometry`. En este `csv` tenemos los datos pero no los polígonos con los que asociarlos, tenemos que **georeferenciar** nuestros datos. Para este propósito, tenemos que  pinchar sobre la capa acceder a la pestaña `ANALYSIS`.
+4. Accedemos a un panel donde CARTO nos ofrece muchos tipos de análisis para realizar sobre nuestros datos. La mayoría de estas herramientas son propios de los software GIS aunque CARTO nos permite hacer mapas verdaderamente impresionantes de una manera fácil e intuitiva.
+5. Vamos a utilizar la opción `Georeference`. Pulsamos sobre esta opción y después sobre `ADD ANALYSIS`. Y volvemos a la pantalla del mapa donde están todas nuestras capas cargadas.
+6. Para continuar con el análisis debemos especificar qué tipo de georeferenciación vamos a llevar a cabo. En este caso, vamos a geolocalizar las provincias con su nombre. En el apartado **[2] Georeference** seleccionamos en la opción `Admin. Regions` del deplegable `Type`.
+7. En el apartado **[3] Parameters** seleccionamos el nombre de la columna donde se encuentran los nombres de las provincias que queremos geolocalizar (si has utilizado el csv del repo deberías seleccionar `name`).
+8. Por últmo pulsamos sobre el botón `APPLY`.
+9. Automaticamente vemos como CARTO ha geolocalizado nuestros datos y podemos ver los polígonos de las provincias.
+10. A continuación vamos a aplicar una escala de color a los datos para apreciar la distribución de los valores. Pulsamos sobre la pestaña `STYLE`.
+11. Por defecto todos los polígonos tienen la misma apariencia, el mismo contorno y color de relleno. Vamos a aplicar una escala de color en función de los valores de la Tasa que hemos asociado desde el csv con los polígonos.
+12. Dentro de la pestaña `STYLE` pulsamos sobre `COLOR`. En lugar del valor por defecto `SOLID` pulsamos `BY VALUE`. Seleccionamos que columna del csv queremos que sea utilizada para aplicar la escala de color. Si has utiliado el `csv` del repo el nombre de la columna es `value`. Dentro de esta opción tenemos acceso a:
+  - En primer lugar podemos seleccionar el número de `buckets` que es el número de colores, de pasos en los que queremos que se divida la escala de color.
+  - El tipo de escala que queremos aplicar: `Quantiles`, `Jenks`, `Equal Interval`, etc. y de las que hemos hablado al comienzo del taller.
+  - A continuación CARTO nos ofrece diferentes escalas de color predefinidas. Si nos posamos con el ratón encima de cada una tenemos la opción de invertir la escala de color. Al principio son escalas sequenciales y hacia el final escalas divergentes. En este caso nos interesa una escala secuencial.
+13. Otro aspecto que convierte a CARTO en una herramienta muy potente es la posibilidad de tanto de realizar consultas SQL para seleccionar nuevos conjuntos de datos como de personalizar el mapa mediante `CARTOCSS`. Dentro de la pestaña `STYLE` y abajo del todo tenemos un `switch` un botón que nos permite acceder al modo `CARTOCSS`. Pulsamos sobre esta opción.
+  - Aquí podemos editar manualmente la escala de color junto con otros muchos aspectos.
+  - Vamos a acceder a la página de [Carto Colors](https://carto.com/carto-colors/) y a seleccionar una escala secuencial (`SEQUENTIAL SCHEMES`) que nos guste y a aplicarla a nuestro mapa. Si pulsamos sobre una escala de color se nos copia en el portapapeles.
+  - En el panel de `CARTOCSS` editamos el valor de el identificador css `#layer` para incluir la nueva escala.
+  ```
+  #layer {
+    polygon-fill: ramp([value], (#f3e79b,#fac484,#f8a07e,#eb7f86,#ce6693,#a059a0,#5c53a5), quantiles);
+  }
+  ```
+  - También podemos añadir aquí nuestra propia escala que hayamos creado según los patrones que hemos aprendido al comienzo de la sesión.
+14. Como crear un `tooltip` o `pop-up`:
+  - Seleccionamos la pestaña `POP-UP`.
+  - Los `pop-ups` pueden tener dos comportamientos: `click` y `hover`. Uno se despliega al hacer click sobre el polígono y el otro al posicionar el ratón sobre el polígono.
+  - Sólo tenemos que escoger el estilo más adecuado para nuestro mapa: `Light`, `Dark`, etc.
+  - En el apartado `Show items`, seleccionar los campos que queremos mostrar en la ventana de información.  
+  - El panel `POP-UP` también ofrece la posibilidad de dar estilo al `pop-up` mediante html si pulsamos sobre el `switch` `HTML`.
+
+#### <a name="join-carto">Realizar una unión entre dos tablas en CARTO</a>
+En este apartado vamos a aprender a realizar un _join_ o unión entre dos tablas en CARTO. Vamos a realizar un mapa de la tasa de población femenina por municipios.  
+Para realizar esta parte del módulo tienes que haber creado un shapefile de los municipios en el que esté el código del INE como hemos aprendido en el apartado [**Manipulación de archivos shp**](#vector).  
+
 
 ## <a name="conversion">Conversión entre sistemas de coordenadas</a>
 La complejidad que supone representar una esfera sobre un plano ha supuesto la creación de diferentes maneras de representar un punto sobre un plano. Aunque existen varios sistemas para representar la información sobre un plano, vamos a centrarnos en dos de los principales sistemas de coordenadas en metros (UTM) y en grados (Lon/Lat).
