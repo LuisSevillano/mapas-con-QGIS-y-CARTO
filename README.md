@@ -5,7 +5,15 @@ La metodología del módulo consistirá en ir conociendo las posibilidades que n
 * [**El Color**](#color): la utilización del color es fundamental a la hora de dar estilo a un mapa. La elección de una paleta de colores adecuada, así como de la escala correcta es fundamental a la hora de comunicar la información.
 * [**Fuentes de información**](#sources): dónde podemos encontrar datos GIS para crear mapas: IGN, Natural Earth, OSM y Geofabrik entre otros.
 * Ser capaces de crear **mapas de puntos**. Nos sirven para geolocalizar acontecimientos como estaciones de servicio, de bicicleta pública, un accidente o un acontecimiento de última hora.
-* Realizar procesos de **análisis geoespacial** y manipulación de archivos de tipo Shape (shp) o filtrado en base a atributos.
+* [**Manipulación de archivos shp**](#vector). Realizar procesos de manipulación de archivos de tipo Shape (shp), filtrado en base a atributos o unir diferentes archivos.
+  - [#](#download-lineas-limite) Obtener los shapefiles oficiales de los diferentes niveles administrativos de España.
+  - [#](#from-etrs90-to-wgs84) Conversión a un tipo de sistema de coordenadas diferente.
+  - [#](#merge) Unir o mergear dos archivos shapefile en uno solo.
+  - [#](#get-ine-code) Extracción de información de un campo con la calculadora de campos.
+  <!-- - [#](#join-csv) Realizar _joins_ o uniones entre un shapefile y un csv. -->
+  - [#](#get-geometry-area) Extracción de información sobre geometería del polígono con la calculadora de campos.
+  
+  
 * [**Conversión**](#conversion) entre sistemas de coodenadas diferentes.
 
 ## <a name="color">Color</a>
@@ -26,10 +34,84 @@ En las siguientes páginas se pueden descargar shapefiles y archivos _raster_ de
 
 - [Diva-gis.org](http://www.diva-gis.org/gdata) nos ofrece datos GIS de cualquier país del mundo. Aunque son datos sin mucho nivel de detalle, nos pueden salvar cuando estamos realizando un mapa de algún país concreto y no encontramos datos sobre su contorno, ríos, carretas o límites administrativos.
 
-## Mapshaper
+## <a name="mapshaper">Mapshaper</a>
 [Mapshaper](http://mapshaper.org/) es una herramienta open source desarrollada por [Mathew Bloch](https://github.com/mbloch). Además de una aplicación por [línea de comandos](https://github.com/mbloch/mapshaper/wiki/Introduction-to-the-Command-Line-Tool) que nos permite manipular archivos Shapefile, GeoJSON, TopoJSON, CSV entre otros formatos, también cuenta con una interfaz web. Podemos utilizar Mapshaper para reducir el peso de los archivos shapefile.   
 
 Cuando estamos trabajando en un mapa que va ser publicado en la web, el peso de los archivos es muy importante. Además, servicios como CARTO tienen un límite de almacenamiento gratuito.
+
+## <a name="vector">Manipulación de archivos shp</a>
+En este apartado vamos a aprender a realizar varias operaciones básicas con QGIS. Nuestro objetivo final será crear un mapa de la densidad de población por municipio en España.
+
+#### <a name="download-lineas-limite">Descarga de Líneas Límite</a>
+
+1. Descargamos los shapefiles oficiales del enlace del CNIG: **Centro de descargas del Instituto Geográfico Nacional** [Enlace ](http://centrodedescargas.cnig.es/CentroDescargas/equipamiento/lineas_limite.zip). Aquí descargaremos los archivos oficiales en formato _shapefie_ (`shp`). Este archivo incluye más shapefiles de los que vamos a necesitar. Si hubiera algún problema con la descarga también se encuentra en la carpeta `shapefiles` del repositorio.    
+
+2. Descomprimimos los archivos. Vamos a trabajar con dos archivos incluidos en dos carpetas diferentes:   
+ * `recintos_municipales_inspire_peninbal_etrs89`  
+ * `recintos_municipales_inspire_canarias_wgs84`   
+
+ El sufijo de los archivos nos indica en qué Sistema de Coordenadas se encuentra cada conjunto de datos (`ETRS89` y `WGS84`).
+ El resto de carpetas contienen las entidades Comunidades Autónomas y Provincias (recintos) además de los contornos (líneas).   
+ 
+3. Añadimos los dos archivos al proyecto que hemos creado en QGIS mediante la opción **capa** → **añadir capa** → **Añadir capa vectorial**. Es importante seleccionar la **codificación** `UTF-8` para no perder información.
+
+#### <a name="from-etrs90-to-wgs84">Convertir un Shapefile a otro sistema de coordenadas</a>
+En nuestro panel de capas de la izquierda tenemos dos capas abiertas. Una capa representa todos los municipios españoles de la Península junto con Baleares, Ceuta y Melilla. La otra capa contiene los municipios de las Islas Canarias.  
+
+En este apartado vamos a aprender como unir estos dos archivos en uno solo. Para poder hacer operaciones entre dos archivos `shp` los dos deben estar bajo el mismo sistema de coordenadas. Para ello vamos a convertir el archivo de Canarias a `ETRS89`.
+1. Click derecho sobre el archivo de Canarias y seleccionamos **Guardar como...**
+2. En `Formato` seleccionamos `Archivo shape de ESRI`.
+3. Seleccionamos donde queremos guardar el archivo (asegurarnos de que tenemos permisos en la carpeta) y el nombre que queremos (por ejemplo `recintos_municipales_inspire_canarias_etrs89.shp`).
+4. En el apartado `SRC` ![src_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/push_src_icon.png) seleccionamos como **Sistema de Coordenadas** `ETRS89` o `EPSG:4258`.
+5. Nos aseguramos de que la pestaña `Añadir archivo guardado al mapa` se encuentra seleccionada. Al aceptar deberíamos tener una nueva capa añadida al proyecto, de lo contrario la añadimos manualmente. Podemos eliminar la capa de Canarias en WGS84.
+
+#### <a name="merge">Unir o mergear dos archivos shapefile en uno solo</a>
+A continuación, vamos a unir las dos capas en un sólo archivo shape. Es fundamental que el paso anterior se haya realizado correctamente ya que cualquier operación espacial entre dos o más capas requiere que estas se encuentren bajo el mismo sistema de coordenadas.   
+1. Seleccionamos la pestaña `procesos` del menú superior. Seguidamente `Caja de Herramientas`. Y a continuación la herramienta `Merge Vector Layers` (podemos hacer una búsqueda con `merge`).
+2. Seleccionamos las dos capas y nombramos el archivo, por ejemplo `recintos_municipales_spain_etrs89`. Podemos comprobar como las dos se encuentran en `EPSG:4528`. Si las dos capas no tienen el mismo sisema de coordenadas el proceso fallará.
+![merge_vector_layers](img/merge-vector-layers.png???)  
+
+3. Hacemos click sobre `Run` para realizar el `merge` entre los dos shapefiles. Deberíamos haber obtenido un nuevo archivo que incluye los polígonos de todos los municipios del país.
+
+#### <a name="get-ine-code">Extracción de información de un campo con la calculadora de campos</a>
+El siguiente paso que vamos a realizar es extraer el código del INE de los shapefiles de CNIG. Para acceder a la tabla de atributos de un shapefile tenemos que hacer click con el botón derecho sobre la capa o en el icono ![attribute_table](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/attribute_table.png). Se nos abrirá la siguiente ventana:   
+
+ ![attribute_table_full](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/attribute_table_full_d.png)      
+
+ Gracias a haber seleccionado la codificación `UTF-8` vemos como los nombres de los municipios presentan todos sus caracteres correctamente. Sobre esta tabla de atributos podemos realizar cálculos para filtrar en base a unas reglas, modificar o incluso crear nuevos campos.  
+
+ En este caso nos interesa el campo `NATCODE`. El `NATCODE` es un código que identifica de manera única a cualquier polígono (en este caso a cualquier municipio). Podemos extraer el código del **INE** de este campo para poder cruzarlo con un csv que hayamos obtenido del INE. Nuestro objetivo es poder asociar unos valores específicos a cada municipio y para ello necesitamos un `id`.   
+
+ Para éste propósito contamos con la `calculadora de campos` ![field_calculator_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/field_calculator_icon.png). Hacemos click sobre el icono. Vamos a extraer una cadena de texto de uno de los campos de la tabla de atributos y a crear una nueva columna con el resultado.
+ 
+ 1. Introducimos el nombre que vamos a dar a la nueva columna en la tabla de atributos, por ejemplo `cod_ine`. Si queremos que el resultado de esta operación sea una cadena de texto y por lo tanto que conserve los ceros por la izquierda (`04004` vs ~~`4004`~~) tenemos que seleccionar el tipo de campo de salida como `Texto` (cadena). De lo contrario dejamos el valor `Numero enterio (int)` por defecto.
+
+ 2. Todos los desplegables de la derecha nos permiten ir construyendo una consulta a la tabla de atributos, una _query_, cuyo resultado será el nuevo campo. Además, nos permiten consultar la documentación asociada a cada función en la caja de la derecha.   
+
+ 3. A continuación vamos a utilizar un método del desplegable `Cadena` (String) llamado `substring`. Vamos a extraer parte de ese código y generar un nuevo campo. Este método nos permitirá modificar el valor de una celda en base a tres argumentos:     
+
+ 	* `cadena_de_entrada` → nombre de la columna de la cual queremos obtener nuestro nuevo campo.   
+ 	* `startpos` → posición inicial desde la que comenzaremos a extraer caracteres (empezando por el primero).
+ 	* `longitud` → longitud de la cadena a extraer.  
+
+  En este caso nuestra consulta será como muestra la imagen:
+
+  ![f_calculator](img/field-calculator_natcode.png)
+
+  En la parte inferior izquierda de la calculadora tenemos una vista preliminar del campo de salida. Si hemos elegido como campo un número entero, al salvar se perderán los ceros por la izquierda aunque en la previsualizacón sí aparezcan.
+
+  Si en algún momento de este proceso nos equivocamos deberemos eliminar el campo y crear uno nuevo o actualizarlo en la opción superior derecha `actualizar campo existente` (tan sólo podremos actualizar el contenido, no la naturaleza del campo). Al finalizar deberemos salvar desde la tabla de atributos ![save_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/save_icon.png).
+ 4. Ya tenemos el codigo del INE para cada municipio.
+ 5. Ahora podemos continuar con el tutorial para ver cómo generar un nuevo campo con el área del municipio o subir este shapefile a CARTO y mergearlo con algunos datos que tengamos a nivel municipal.
+
+<!--
+#### <a name="join-csv">Realizar _joins_ o uniones entre un shapefile y un csv</a> -->
+
+#### <a name="get-geometry-area">Extracción de información sobre geomtería del polígono con la calculadora de campos</a>
+La calculadora de campos de QGIS nos ofrece funciones relacionadas con la geomtría y la geodesia que vamos a utilizar. Estas funciones las podemos encontrar en el apartado **Geomgetría** de la calculadora de campos. A continuación vamos a ver cómo podemos calcular el área de un polígono.
+1. El proceso es parecido al que seguimos para crear un nuevo campo.
+2. Seleccionamos el nombre de la nueva columna, su naturaleza.
+3. Por último, seleccionamos la opción $area del apartado Geometría (podemos utilizar el buscador).
 
 ## <a name="conversion">Conversión entre sistemas de coordenadas</a>
 La complejidad que supone representar una esfera sobre un plano ha supuesto la creación de diferentes maneras de representar un punto sobre un plano. Aunque existen varios sistemas para representar la información sobre un plano, vamos a centrarnos en dos de los principales sistemas de coordenadas en metros (UTM) y en grados (Lon/Lat).
@@ -64,7 +146,7 @@ En esta parte del módulo vamos a ver cómo convertir coordenadas del sistema **
     - Comprobamos que en el apartado inferior `Vista preliminar de la salida` vemos un valor parecido a `40.4719271557661` para la latitud y que no nos aparece un `null` o algún otro valor erróneo.
     - Pulsamos sobre aceptar para generar este nuevo campo.
     
-  - Por último, salvamos los cambios en el icono salimos del modo edición haciendo click sobre el icono `Commutar edición` que se activa cuando accedemos a la calculadora de campos.
+  - Por último, salvamos los cambios en el icono ![save_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/save_icon.png) y salimos del modo edición haciendo click sobre el icono `Commutar edición` que se activa cuando accedemos a la calculadora de campos.
   
   - Si queremos exportar estos resultados a un formato **csv** tenemos que hacer click derecho sobre la capa y **guardar como**. En formato seleccionamos **Valores separados por comas [CSV]**.
   
