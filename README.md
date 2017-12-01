@@ -192,30 +192,30 @@ En la pestaña 	`Propiedades del elemento` deseleccionamos la pestaña `fondo`.
 ## <a name="carto">Crear un mapa con CARTO</a>
 
 #### <a name="upload-carto">Subir datos a CARTO</a>
-Una vez que nos hayamos registrado en la plataforma tenemos acceso a unos 500Mb de almacenamiento gratuito. Podemos añadir tanto archivos csv como shapefiles. Teniendo en cuenta que estos últimos suelen ser bastante pesados, la mejor opción será subirlos una sola vez y utilizar siempre el mismo dataset de origen para crear nuevos mapas.
+Una vez que nos hayamos registrado en la plataforma tenemos acceso a unos 500Mb de almacenamiento gratuito. Podemos añadir tanto archivos csv, kml o shapefiles. Teniendo en cuenta que estos últimos suelen ser bastante pesados, la mejor opción será subirlos una sola vez y utilizar siempre el mismo Dataset de origen para crear nuevos mapas así como utilizar algún algoritmo de simplificación como los que nos ofrece la herramienta Mapshaper.
 1. Para subir un nuevo archivo a CARTO deberemos ir a la pestaña `Datasets`.
-2. En esta interfaz podemos arrastrar el archivo que queramos subir o podemos utilizar otros servicios si hacemos click en la opción `NEW DATASET`. En esta pestaña también podemos _soltar_ un archivo encima, abrir una ventana para seleccionarlo en nuestro sistema, conectar con un Spreasheet de Google Drive, Dropbox, etc.
+2. En esta interfaz podemos arrastrar y soltar el archivo que queramos subir o podemos utilizar otros servicios si hacemos click en la opción `NEW DATASET`. En esta pestaña también podemos arrastrar y soltar un archivo, abrir una ventana para seleccionarlo en nuestro sistema, conectar con un Spreasheet de Google Drive, Dropbox, etc.
 3. Seleccionamos en `CONNECT DATASET`. Carto Geolocalizará automaticamente aquellos elementos que pueda reconocer por alguno de los campos de la tabla.
-4. Automáticamente todos los dataset que subimos a CARTO se almacenan en la pestaña de `Datasets`. Aquí podemos variar las opciones de nuestros dataset. Podemos añadr descripciones, cambiar el nombre, hacerlos públicos, añadir `tags` para clasificarlos, ordenarlos por número de visitas, etc.
-5. Vamos a subir un dataset con los últimos datos sobre la [Tasa de Paro por provincias del INE](http://www.ine.es/jaxiT3/Tabla.htm?t=3996). Los datos requieren de una pequeña manipulación. Podemos utilizar el dataset `tasa_de_paro_provincias.csv` que se encuentra en la carpeta `data` del repositorio.
+4. Automáticamente todos los Dataset que subimos a CARTO se almacenan en la pestaña de `Datasets`. Aquí podemos variar las opciones de nuestros Dataset. Podemos añadir descripciones, cambiar el nombre, hacerlos públicos, añadir `tags` para clasificarlos, ordenarlos por número de visitas, etc.
+5. Vamos a subir un Dataset con los últimos datos sobre la [Tasa de Paro por provincias del INE](http://www.ine.es/jaxiT3/Tabla.htm?t=3996) correspondientes al tercer Trimestre de 2017. Los datos requieren de una pequeña manipulación para sustituir la coma por el punto como separador de decimales o separar el código de provincia del nombre. Podemos utilizar el Dataset `tasa_de_paro_provincias.csv` que se encuentra en la carpeta `data` del repositorio.
 6. Para crear un coropleta sobre la Tasa de Paro por provincias accede al siguiente apartado [Mapa de la Tasa de Paro por provincias con CARTO](#make-carto).
 
 #### <a name="make-carto">Mapa de la Tasa de Paro por provincias con CARTO</a>
-1. Si ya tenemos el dataset de la Tasa de Paro por provincias en nuestro Dashboard pinchamos sobre él y después sobre la opción `Create map`.
+1. Si ya tenemos el Dataset de la Tasa de Paro por provincias en nuestro Dashboard pinchamos sobre él y después sobre la opción `Create map`.
 2. Si tienes un shapefile de provincias, ve a las sección [Realizar una unión entre dos tablas en CARTO](#join-carto). De lo contrario, continúa con este apartado.
-3. En un primer momento, no vemos ninguna geometría asociada a nuestros datos y sobre la capa aparece un pequeño icono de warning que nos dice `Layer doesn't have geometry`. En este `csv` tenemos los datos pero no los polígonos con los que asociarlos, tenemos que **georeferenciar** nuestros datos. Para este propósito, tenemos que  pinchar sobre la capa acceder a la pestaña `ANALYSIS`.
-4. Accedemos a un panel donde CARTO nos ofrece muchos tipos de análisis para realizar sobre nuestros datos. La mayoría de estas herramientas son propios de los software GIS aunque CARTO nos permite hacer mapas verdaderamente impresionantes de una manera fácil e intuitiva.
+3. En un primer momento, no vemos ninguna geometría asociada a nuestros datos y sobre la capa aparece un pequeño icono de warning que nos dice `Layer doesn't have geometry`. En este `csv` tenemos los datos pero no los polígonos con los que asociarlos, tenemos que **georreferenciar** nuestros datos. CARTO nos ofrece esta posibilidad añadiendo un tio de anñalisis llamado `Georeference`. Tenemos que  pinchar sobre la capa y sobre la pestaña `ANALYSIS`.
+4. Accedemos a un panel donde CARTO incluye muchos tipos de análisis para realizar sobre nuestros datos. La mayoría de estas herramientas son propios de los software GIS aunque CARTO nos permite hacer mapas verdaderamente impresionantes de una manera fácil e intuitiva.
 5. Vamos a utilizar la opción `Georeference`. Pulsamos sobre esta opción y después sobre `ADD ANALYSIS`. Y volvemos a la pantalla del mapa donde están todas nuestras capas cargadas.
-6. Para continuar con el análisis debemos especificar qué tipo de georeferenciación vamos a llevar a cabo. En este caso, vamos a geolocalizar las provincias con su nombre. En el apartado **[2] Georeference** seleccionamos en la opción `Admin. Regions` del deplegable `Type`.
-7. En el apartado **[3] Parameters** seleccionamos el nombre de la columna donde se encuentran los nombres de las provincias que queremos geolocalizar (si has utilizado el csv del repo deberías seleccionar `name`).
+6. Para continuar con el análisis debemos especificar qué tipo de georreferenciación vamos a llevar a cabo. En este caso, vamos a georreferenciado las provincias con su nombre. En el apartado **[2] Georeference** seleccionamos en la opción `Admin. Regions` del deplegable `Type`.
+7. En el apartado **[3] Parameters** seleccionamos el nombre de la columna donde se encuentran los nombres de las provincias que queremos georreferenciar (si has utilizado el csv del repo deberías seleccionar `name`).
 8. Por últmo pulsamos sobre el botón `APPLY`.
-9. Automaticamente vemos como CARTO ha geolocalizado nuestros datos y podemos ver los polígonos de las provincias.
+9. Automaticamente vemos como CARTO ha georreferenciado nuestros datos y podemos ver los polígonos de las provincias en nuestro mapa.
 10. A continuación vamos a aplicar una escala de color a los datos para apreciar la distribución de los valores. Pulsamos sobre la pestaña `STYLE`.
 11. Por defecto todos los polígonos tienen la misma apariencia, el mismo contorno y color de relleno. Vamos a aplicar una escala de color en función de los valores de la Tasa que hemos asociado desde el csv con los polígonos.
-12. Dentro de la pestaña `STYLE` pulsamos sobre `COLOR`. En lugar del valor por defecto `SOLID` pulsamos `BY VALUE`. Seleccionamos que columna del csv queremos que sea utilizada para aplicar la escala de color. Si has utiliado el `csv` del repo el nombre de la columna es `value`. Dentro de esta opción tenemos acceso a:
+12. Dentro de la pestaña `STYLE` pulsamos sobre `COLOR`. En lugar del valor por defecto `SOLID` pulsamos `BY VALUE`. Seleccionamos qué columna del csv queremos utilizar para aplicar la escala de color. Si has utiliado el `csv` del repo el nombre de la columna es `value`. Dentro de esta opción tenemos acceso a:
   - En primer lugar podemos seleccionar el número de `buckets` que es el número de colores, de pasos en los que queremos que se divida la escala de color.
   - El tipo de escala que queremos aplicar: `Quantiles`, `Jenks`, `Equal Interval`, etc. y de las que hemos hablado al comienzo del taller.
-  - A continuación CARTO nos ofrece diferentes escalas de color predefinidas. Si nos posamos con el ratón encima de cada una tenemos la opción de invertir la escala de color. Al principio son escalas sequenciales y hacia el final escalas divergentes. En este caso nos interesa una escala secuencial.
+  - CARTO nos ofrece diferentes escalas de color predefinidas. Si nos posamos con el ratón encima de cada una tenemos la opción de invertir la escala de color. Al principio son escalas secuenciales y hacia el final escalas divergentes. En este caso nos interesa una escala secuencial.
 13. Otro aspecto que convierte a CARTO en una herramienta muy potente es la posibilidad de tanto de realizar consultas SQL para seleccionar nuevos conjuntos de datos como de personalizar el mapa mediante `CARTOCSS`. Dentro de la pestaña `STYLE` y abajo del todo tenemos un `switch` un botón que nos permite acceder al modo `CARTOCSS`. Pulsamos sobre esta opción.
   - Aquí podemos editar manualmente la escala de color junto con otros muchos aspectos.
   - Vamos a acceder a la página de [Carto Colors](https://carto.com/carto-colors/) y a seleccionar una escala secuencial (`SEQUENTIAL SCHEMES`) que nos guste y a aplicarla a nuestro mapa. Si pulsamos sobre una escala de color se nos copia en el portapapeles.
@@ -244,21 +244,21 @@ Una vez que nos hayamos registrado en la plataforma tenemos acceso a unos 500Mb 
 En este apartado vamos a aprender a realizar un _join_ o unión entre dos tablas en CARTO. Vamos a realizar un mapa de la tasa de población femenina por municipios.  
 Para realizar esta parte del módulo tienes que haber creado un shapefile de los municipios en el que esté el código del INE como hemos aprendido en el apartado [**Manipulación de archivos shp**](#vector).  
 También recomendamos simplificar la geometría de los shapefiles que vayamos a subir a CARTO para ahorrarnos espacio de almacenamiento.
-1. Subimos el csv `poblacion_municipios.csv` de la carpeta `data` del repositorio. Es un csv con los datos de la [Revisión del padrón municipal a 1 de enero de 2017](http://www.ine.es/dynt3/inebase/index.htm?padre=525) que tiene tres columnas preprocesadas: `cod_ine`, `tasa_varones`, `tasa_mujeres`.
-2. Subimos el archivo shp de municipios comprimido y simplificado mediante Mapshaper.
+1. Subimos el csv `poblacion_municipios.csv` de la carpeta `data` del repositorio. Es un csv con los datos de la [Revisión del padrón municipal a 1 de enero de 2017](http://www.ine.es/dynt3/inebase/index.htm?padre=525) que tiene tres columnas preprocesadas: `cod_ine`, `tasa_varones`, `tasa_mujeres`. Podéis realizar este proceso manualmente si queréis conocer todos los pasos al detalle.
+2. Subimos el archivo `shp` de municipios comprimido y simplificado mediante Mapshaper.
 3. En nuestro Dashboard pulsamos sobre el Dataset que contiene los polígonos de los municipios y pulsamos sobre `CREATE MAP`.
 4. Una vez sobre el mapa pulsamos sobre la capa de los polígonos.
 5. En la pestaña análisis, seleccionamos el tipo de análisis `Join columns from 2nd layer` y `ADD ANALYSIS`.
-6. En el apartado **[2] Join columns from 2nd layer** tenemos que seleccionar con que otro dataset queremos hacer el join. En este caso seleccionamos el csv con los datos de población.
-7. En el apartado **[3] Key columns** indicamos cuáles van a ser las columnas de los respectivos dataset mediante las que vamos a realizar la unión entre las dos tablas. En este caso, será el campo que contenga el código del INE.
-8. En el apartado **[4] Output data** seleccionamos qué campos queremos conservar de cada dataset para la nueva tabla que va a resultar de esta unión. En este caso podemos seleccionar el nombre del municipio de la capa de los polígonos `NAMEUNIT` y de la capa del `csv` la población total, ṕoblación de hombres y mujeres y tasa de hombres y tasa de mujeres. Aplicamos el análisis pulsando en el botón `APPLY`.
+6. En el apartado **[2] Join columns from 2nd layer** tenemos que seleccionar con que otro Dataset queremos hacer el join. En este caso seleccionamos el csv con los datos de población.
+7. En el apartado **[3] Key columns** indicamos cuáles van a ser las columnas de los respectivos Dataset mediante las que vamos a realizar la unión entre las dos tablas. En este caso, será el campo que contenga el código del INE.
+8. En el apartado **[4] Output data** seleccionamos qué campos queremos conservar de cada Dataset para la nueva tabla que va a resultar de esta unión. En este caso podemos seleccionar el nombre del municipio de la capa de los polígonos `NAMEUNIT` y de la capa del `csv` la población total, ṕoblación de hombres y mujeres y tasa de hombres y tasa de mujeres. Aplicamos el análisis pulsando en el botón `APPLY`.
 9. Por último, sólo nos queda aplicar una escala de color en función del campo que queramos representar en la pestaña `STYLE`.  
 10. Podemos customizar un `pop-up` para mostrar los datos que queramos.
 
 
 #### <a name="points-carto">Mapa de puntos en CARTO</a>
-Los mapas de puntos son utilizados para loclaizar en un mapa eventos puntuales como terremotos, ataques terroristas, avistamientos de aves o accidentes de algún tipo. Sus datos no tienen porque ser vectoriales sino que dependen de unas coordenadas para ser representados.
-Estas coordenadas pueden estar representadas bajo diferentes sistemas de coordenadas si bien es cierto que uno de los sistemas más populares es el medido en grados Latitud y Longitud. Si tienes tus datos en un sistema UTM y quieres pasarlo a un sistema en grados puedes consultar el apartado [**Conversión entre sistemas de coodenadas diferentes**](#conversion).   
+Los mapas de puntos son utilizados para localizar en un mapa eventos puntuales como terremotos, ataques terroristas, mediciones de ruido, avistamientos de aves o accidentes de algún tipo. Sus datos no son vectoriales sino que dependen de unas coordenadas para ser representados.
+Estas coordenadas pueden estar representadas bajo diferentes sistemas de referencia de coordenadas si bien es cierto que uno de los sistemas más populares es el medido en coordenadas geográficas. Si tienes tus datos en un sistema UTM de coordenadas proyectadas y quieres pasarlo a un sistema de coordenadas geográficas puedes consultar el apartado [**Conversión entre sistemas de coodenadas diferentes**](#conversion).   
 
 En este apartado vamos a representar los terremotos de los últimos 3 años. Para ello vamos a descargarnos datos de terremotos del **Servicio Geológico de los Estados Unidos** ([USGS](https://earthquake.usgs.gov/earthquakes/search/)).
 
@@ -272,28 +272,28 @@ A continuación vamos a subir los datos a CARTO como hemos visto en el apartado 
 A continuación vamos a ver que opciones nos ofrece CARTO para dar estilo a un mapa de puntos.
 
 1. `POINTS`: este tipo de layout nos permite representar los datos en puntos. Es útil cuando queremos mostrar una distribución o controlar el tamaño de los círculos en función de los datos.
-   - El estilo por defecto suele ser un stroke blanco con relleno rojo. Aunque no queramos dar estilo a este Dataset en función de su tabla de atributos, podríamos mejorar la apariencia de este Dataset simplemente aliminando el stroke o contorno del punto y haciendolo más pequeño. Apreciaremos mejor la distribución de los datos. Desde la pestaña de estilo dejamos el valor `aggregation` por defecto y nos centramos en **[2] Style**.
+   - El estilo por defecto suele ser un stroke blanco con relleno rojo. Si no queremos controlar el tamaño de los bubbles en función de su tabla de atributos, podemos mejorar la apariencia de este Dataset simplemente aliminando el stroke o contorno del punto y haciendolo más pequeño. Apreciaremos mejor la distribución de los datos. Desde la pestaña de estilo dejamos el valor `aggregation` por defecto y nos centramos en **[2] Style**.
    - Aplicar el tamaño de los puntos en función de un campo de la tabla de atributos. En este caso, debemos seleccionar en `SIZE/COLOR` by value y seleccionar la columna que queramos de la tabla, por ejemplo el campo `mag` ([Magnitude for the event](https://earthquake.usgs.gov/data/comcat/data-eventterms.php#mag)). En esta opción podemos establecer el valor mínimo y el valor maximo que recibiran los _bubbles_ en función del valor de la tabla.
    - Si pinchamos en la barra de color también podemos colorear los puntos en función de los datos de la tabla.
    - En el apartado `BLENDING` controlamos el modo de fusión entre los círculos. Es útil cuando tenemos muchos datos y se solapan entre ellos.
  
-2. `SQUARES`/`HEXBINS`: crea una regilla de cuadrados donde la intensidad del color refleja la cantidad de eventos (datos) que se concentran en el área que ocupa cada cuadrado. En las opciones de agregado podemos controlar este factor y en lugar de una cuenta, podemos hacer una suma, máximo o mínimo valor o media. Si elegimos alguna operación como suma, media debemos de nuevo elegir el campo en base al cual se va a realizar la operación. Estas opciones pueden ser muy útilessi por ejemplo tuvieramos datos de accidentes de tráfico y quisiéramos hayar la media o la suma total de heridos. Con los datos actuales podemos calcular la media de la magnitud de los terremotos en una región y encontrar si hay zonas que a pesar de registrar más terremotos estos suelen ser de menor magnitud y por lo tanto tener menos consecuencias.
+2. `SQUARES`/`HEXBINS`: crea una regilla de cuadrados o hexagonos donde la intensidad del color refleja la cantidad de eventos (datos) que se concentran en el área que ocupa cada cuadrado. En las opciones de agregado podemos controlar este factor y en lugar de una cuenta, podemos hacer una suma, máximo o mínimo valor o media. Si elegimos alguna operación como suma, media debemos de nuevo elegir el campo en base al cual se va a realizar la operación. Estas opciones pueden ser muy útiles si, por ejemplo, tuvieramos datos de accidentes de tráfico y quisiéramos calcular la media o la suma total de heridos en una zona. Con los datos actuales podemos calcular la media de la magnitud de los terremotos en una región. Podríamos ver si existen zonas que pese a registrar más terremotos, suelen ser de menor magnitud y por lo tanto tener menos consecuencias.
 
-3. `ADMIN. REGIONS`: parecido al geoproceso _points int polygons_. Realiza el recuento de los eventos en función de las áreas administrativas que los contienen. Este algoritmo tiene el defecto de que asigna un color, aunque muy claro, a aquelas zonas para las que no hay datos, induciendo a error.
+3. `ADMIN. REGIONS`: parecido al geoproceso _points in polygons_. Realiza el recuento de los eventos en función de las áreas administrativas que los contienen. Este algoritmo tiene el defecto de asignar un color, aunque muy claro, a aquellas zonas para las que no hay datos (induciendo a error).
 
 4. `ANIMATED`: permite animar nuestros datos en función de alguno de sus campos. Si, como es el caso para el Dataset de terremotos, tenemos un campo en nuestra tabla que es de tipo fecha, podemos animar nuestros datos de manera cronológica, creando una animación. En este caso debemos seleccionar la columna en base a la que se realiza el órden en el campo `COLUMN` (para los terremotos es el campo `time`). Puede ser un id que hayamos asignado nosotros o un campo de tipo fecha. Esta opción también nos permite una opcion _heatmap_ para apreciar la concentración de valores.
 
-5. `PIXEL`: crea una foto fija de los datos aunque no permite seleccionar columnas de la tabla.
+5. `PIXEL`: crea una foto fija de los datos en modo _heatmap_ aunque no permite seleccionar columnas de la tabla para personalizar la apariencia.
 
-La mayoría de todas estas opciones pueden ser enriquecidas con pop-ups y leyendas. Sigue hasta el siguient apartado para aprender a utilizar los widgets de CARTO para filtrar los datos en tiempo real.
+La mayoría de todas estas opciones pueden ser enriquecidas con pop-ups y leyendas. Sigue hasta el siguiente apartado para aprender a utilizar los widgets de CARTO para filtrar los datos en tiempo real.
  
  
 #### <a name="widget-carto">Añadir widgets en CARTO</a>
-Los [widgets](https://carto.com/learn/guides/widgets/exploring-widgets) son herramientas interactivas que nos permiten explorar los datos sobre el mapa. Los podemos utilizar para filtrar los datos en tiempo real. Si reutilizamos los datos sobre terremotos que hemos visto en tiempo real, podemos realizar un filtrado para ver qué terremotos de todos los puntos que vemos sobre el moto tuvieron una magnitud mayor de 7.
-1. Para añadir un widgets tenemos que estar en el panel principal del mapa. Pulsamos sobre la pestaña `WIDGETS` Y `ADD`.
+Los [widgets](https://carto.com/learn/guides/widgets/exploring-widgets) son herramientas interactivas que nos permiten explorar los datos sobre el mapa y  filtrarlos en tiempo real. Si reutilizamos los datos sobre terremotos podemos realizar un filtrado para ver qué terremotos de todos los puntos que vemos sobre el mapa tuvieron una magnitud mayor de 7.
+1. Para poder añadir un widget debemos estar en el panel principal del mapa (y no dentro de una capa). Pulsamos sobre la pestaña `WIDGETS` y `ADD`.
 2. Accedemos a un panel en el que podemos seleccionar diferentes tipos de widgets en función de la naturaleza de nuestros campos, si son datos cuantitativos o  categóricos.
 3. Para los terremotos podemos incluir un widget en la pestaña `HISTOGRAM` para la variable magnitud (`mag`).
-4. Podemos añadit otro widget de tipo `time` en la pestaña `TIME-SERIES`.
+4. Podemos añadir otro widget de tipo `time` en la pestaña `TIME-SERIES`.
 5. Los widgets nos permitern conocer y filtrar los datos en tiempo real y lo que es mejor, de manera dinámica en función de la zona del mapa en que nos encontremos.
 6. Algunos widgets nos permiten utilizar la pestaña Auto Style, que colorea de manera automática los datos en función de sus valores.
 
@@ -302,23 +302,23 @@ Los [widgets](https://carto.com/learn/guides/widgets/exploring-widgets) son herr
 CARTO ha añadido recientemente toda una colección de herramientas de análisis que podemos utilizar sobre nuestras capas. A lo largo de este módulo trabajamos con dos de ellas: realizar uniones con otras tablas, o georeferenciar los datos de una tabla, pero son solo dos de entre las más de 15 herramientas que posee CARTO en este momento. Podemos filtrar datos en función de otra tabla, crear zonas de influencia (_buffers_), contar puntos en polígonos, filtrar por atributos de la tabla en base a una expresión, etc.
 
 ## <a name="conversion">Conversión entre sistemas de coordenadas</a>
-La complejidad que supone representar una esfera sobre un plano ha supuesto la creación de diferentes maneras de representar un punto sobre un plano. Aunque existen varios sistemas para representar la información sobre un plano, vamos a centrarnos en dos de los principales sistemas de coordenadas en metros (UTM) y en grados (Lon/Lat).
+La complejidad que supone representar una esfera sobre un plano ha supuesto la creación de diferentes maneras de representar un punto sobre un plano. Aunque existen varios sistemas para representar la información sobre un plano, vamos a centrarnos en dos de los principales sistemas de referencia de coordenadas: proyectadas (UTM) y esféricas (Lon/Lat).
 
-En esta parte del módulo vamos a ver cómo convertir coordenadas del sistema **UTM** (`433743.5,4480432`) a **Lon/Lat** (`40.471927,-3.781607`) que es el sistema con el que tradicionalmente trabajan los servicios de representación de datos como CARTO. Carto también permite realizar conversiones entre coordenadas pero necesitamos realizar algunas consultas SQL.
+En esta parte del módulo vamos a ver cómo convertir coordenadas del sistema **UTM** (`433743.5,4480432`) a **Lon/Lat** (`40.471927,-3.781607`) que es el sistema con el que tradicionalmente trabajan los servicios de representación de datos como CARTO. Es muy importante seguir paso a paso el siguiente proceso ya que de lo contrario fallará.
 
-- Vamos a trabajar con el dataset de todas las paradas de la **EMT** que la empresa ofrece en su portal de datos abiertos. Hacemos click en [este](http://opendata.emtmadrid.es/Datos-estaticos/Datos-generales) enlace y descargamos el xlsx de la **pestaña Paradas**. **Convertimos el archivo a csv** para poder abrirlo con QGIS.
+1. Vamos a trabajar con el Dataset de todas las paradas de la **EMT** que la empresa ofrece en su portal de datos abiertos. Hacemos click en [este](http://opendata.emtmadrid.es/Datos-estaticos/Datos-generales) enlace y descargamos el xlsx de la **pestaña Paradas**. **Convertimos el archivo a csv** para poder abrirlo con QGIS.
 
-- Creamos un **nuevo proyecto** en QGIS. Accedemos a propiedades del proyecto y seleccionamos el **Sistema de Referencia de Coordenadas** en coordenadas **UTM**, podemos buscar el correspondiente código `EPSG:25830`.
+2. Creamos un **nuevo proyecto** en QGIS. Accedemos a propiedades del proyecto y seleccionamos el **Sistema de Referencia de Coordenadas** en coordenadas **UTM**, podemos buscar el correspondiente código `EPSG:25830` o por su nombre `ETRS89 / UTM zone 30N`.
 
-- Cargamos el archivo csv de las paradas de la EMT. Es posible que QGIS nos avise de que la capa no tiene un CRS definido. Hacemos click derecho sobre la capa y pulsamos sobre **Establecer SRC de la capa**. En el desplegable seleccionamos el mismo sistema de coordenadas del proyecto: **EPSG:25830** o **ETRS89 / UTM zone 30N**.
+3. Cargamos el archivo csv de las paradas de la EMT. Es posible que QGIS nos avise de que la capa no tiene un CRS definido. Hacemos click derecho sobre la capa y pulsamos sobre **Establecer SRC de la capa**. En el desplegable seleccionamos el mismo sistema de coordenadas del proyecto: **EPSG:25830** o **ETRS89 / UTM zone 30N**.
 
-- A continuación vamos a **guardar esta capa como shapefile**: botón derecho sobre la capa y **guardar como** En este paso, también vamos a generar la nueva capa bajo el sistema de coordenadas WGS84. **Es importante** que al salvar el archivo como shapefile seleccionemos en el apartado SRC el sistema **WGS84** o  **EPSG:4326**.
+4. A continuación vamos a **guardar esta capa como shapefile**: botón derecho sobre la capa y **guardar como** En este paso, también vamos a generar la nueva capa bajo el sistema de coordenadas geográficas `WGS84`. **Es importante** que al salvar el archivo como shapefile seleccionemos en el apartado SRC el sistema **WGS84** o  **EPSG:4326**.
 
-- Añadimos la nueva capa al proyecto **sólo si no se ha añadido automáticamente**.
+5. Añadimos la nueva capa al proyecto **sólo si no se ha añadido automáticamente**.
 
-- A continuación vamos a crear dos nuevos campos, uno correspondiente a la Longitud y otro a la Latitud en grados. Para ello necesitamos la calculadora de campos. Esta herramienta nos permite generar nuevos campos en base a los cmapos de la tabla de atributos o en base a su **geometría** como nos interesa ahora mismo.
+6. A continuación vamos a crear dos nuevos campos, uno correspondiente a la Longitud y otro a la Latitud en grados. Para ello necesitamos la calculadora de campos. Esta herramienta nos permite generar nuevos campos, realizando cálculos entre los valores de las columnas en base a su **geometría** como nos interesa ahora mismo.
 
-- Pulsamos sobre la `calculadora de campos` ![field_calculator_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/field_calculator_icon.png). Creamos u nuevo campo que cumpla las siguientes caracteristicas:
+7. Pulsamos sobre la `calculadora de campos` ![field_calculator_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/field_calculator_icon.png). Creamos u nuevo campo que cumpla las siguientes caracteristicas:
   - **Nombre del campo**: `longitud`.
   - **Tipo del campo de salida***: `Numero decimal (real)`.
   - **Longitud del campo de salida***: seleccionamos una precisión de 6 decimales.
@@ -334,7 +334,7 @@ En esta parte del módulo vamos a ver cómo convertir coordenadas del sistema **
     - Comprobamos que en el apartado inferior `Vista preliminar de la salida` vemos un valor parecido a `40.4719271557661` para la latitud y que no nos aparece un `null` o algún otro valor erróneo.
     - Pulsamos sobre aceptar para generar este nuevo campo.
     
-  - Por último, salvamos los cambios en el icono ![save_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/save_icon.png) y salimos del modo edición haciendo click sobre el icono `Commutar edición` que se activa cuando accedemos a la calculadora de campos.
+  - Por último, salvamos los cambios en el icono ![save_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/save_icon.png) y salimos del modo edición haciendo click sobre el icono `Commutar edición` que se activa cuando creamos nuevos campos.
   
   - Si queremos exportar estos resultados a un formato **csv** tenemos que hacer click derecho sobre la capa y **guardar como**. En formato seleccionamos **Valores separados por comas [CSV]**.
   
