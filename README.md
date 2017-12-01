@@ -1,17 +1,19 @@
-# Taller de Periodismo de Datos
-Materiales para el Taller de Periodismo de Datos de El País en colaboración con la Fundación BBVA. Este módulo contempla la utilización de mapas como herramienta en el Periodismo. A lo largo de dos sesiones aprenderemos a utilizar dos de las herramientas más populares para realizar mapas: [CARTO](https://carto.com/) y [QGIS](http://www.qgis.com/).
+# Mapas con QGIS y CARTO
+##### Materiales para el Taller de Periodismo de Datos de El País en colaboración con la Fundación BBVA.
 
-La metodología del módulo consistirá en ir conociendo las posibilidades que nos ofrecen las herramientas GIS para realizar análisis, manipulación y creación de nuevos campos y variables que nos sirvan para representar información sobre un mapa. Iremos cambiando de una herramienta a otra con el objetivo de ir conociendo el potencial y las posibilidades que nos ofrece cada una. A lo largo de las dos sesiones vamos a tratar aspectos como:
+Este módulo introduce al alumno en el uso del mapa como herramienta en el Periodismo. A lo largo de dos sesiones aprenderemos a utilizar dos de las herramientas más populares para realizar mapas: [CARTO](https://carto.com/) y [QGIS](http://www.qgis.com/).
+
+La metodología del módulo consiste en ir conociendo las posibilidades que nos ofrecen las herramientas GIS para realizar análisis, manipulación y creación de nuevos campos y variables que nos sirvan para representar información sobre un mapa. Iremos cambiando de una herramienta a otra con el objetivo de ir conociendo el potencial y las posibilidades que nos ofrece cada una. A lo largo de las dos sesiones vamos a tratar aspectos como:
 * [**El Color**](#color): la utilización del color es fundamental a la hora de dar estilo a un mapa. La elección de una paleta de colores adecuada, así como de la escala correcta es fundamental a la hora de comunicar la información.
 * [**Fuentes de información**](#sources): dónde podemos encontrar datos GIS para crear mapas: IGN, Natural Earth, OSM y Geofabrik entre otros.
 * Ser capaces de crear **mapas de puntos**. Nos sirven para geolocalizar acontecimientos como estaciones de servicio, de bicicleta pública, un accidente o un acontecimiento de última hora.
-* [**Manipulación de archivos shp**](#vector). Realizar procesos de manipulación de archivos vectoriales, operaciones con atributos, uniones entre shapefiles o asígnación de datos externos a un shapefile.
+* [**Manipulación de shapefiles con QGIS**](#vector). Realizar procesos de manipulación de archivos vectoriales, operaciones con atributos, uniones entre shapefiles o asígnación de datos externos a un shapefile. Utilizaremos como ejemplo guía la creación de un mapa de la densidad de población por municipio en España.
   - [Descarga de los shapefiles oficiales](#download-lineas-limite): Obtener los shapefiles oficiales de los diferentes niveles administrativos de España.
-  - [Conversión a un tipo de sistema de coordenadas diferente](#from-etrs90-to-wgs84).
+  - [Conversión a un tipo de sistema de referencia de coordenadas diferente](#from-etrs90-to-wgs84).
   - [Unir o mergear dos archivos shapefile en uno solo](#merge).
   - [Realizar cálculos con los campos de la tabla de atributos](#get-ine-code): extracción de información de un campo con la calculadora de campos para obtener el código del INE.
   - [Añadir un csv externo](#add-csv): asignar datos de un `csv` a polígonos como municipios, provincias, etc.
-  - [Join entre capas](#join-csv): Realizar _joins_ o uniones entre un shapefile y un csv.
+  - [Join entre capas](#join-csv): Realizar _joins_ o uniones entre dos tablas.
   - [Calcular la densidad de población](#density-qgis): Calcular la densidad de población por municipios con la calculadora de campos.
   - [Aplicar una escala de color en QGIS](#color-qgis).
   - [Extracción de información sobre geometería](#get-geometry-area): calcular el área de un polígono con la calculadora de campos.
@@ -19,29 +21,28 @@ La metodología del módulo consistirá en ir conociendo las posibilidades que n
   
 * [**Crear un mapa con CARTO**](#carto)
   - [Subir datos a CARTO](#upload-carto). Aprenderemos a subir tanto archivos `csv` como `shp`.
-  - [Mapa de la Tasa de Paro por provincias con CARTO](#make-carto).
-  - [Realizar una unión entre dos tablas en CARTO](#join-carto).
-  - [Mapa de puntos en CARTO](#points-carto).
-  - [Añadir widgets en CARTO](#widget-carto).
-  - [Realizar análisis con CARTO](#analysis-carto).
+  - [Mapa de la Tasa de Paro por provincias](#make-carto).
+  - [Realizar una unión entre dos tablas](#join-carto).
+  - [Mapa de puntos](#points-carto).
+  - [Añadir widgets](#widget-carto).
+  - [Realizar análisis](#analysis-carto).
   
-* [**Conversión**](#conversion) entre sistemas de coodenadas diferentes.
+* [**Conversión**](#conversion) entre sistemas de coodenadas diferentes con QGIS.
 
 ## <a name="color">Color</a>
-- A la hora de escoger una escala de color existente, [Colorbrewer](http://colorbrewer2.org/) es una muy buena herramienta para acceder a una paleta de colores adecuada. Los colores que nos ofrece pertenecen al estudio científico de la Dr. Cynthia A. Brewer y nos permite seleccionar escalas de color secuenciales, qualitativas o divergentes. Nos permite exportar los colores como una paleta de colores para GIMP (Software libre para trabajo vectorial), clases CSS, un array JavaScript con los colores en formato rgb.
+- A la hora de escoger una escala de color existente, [Colorbrewer](http://colorbrewer2.org/) es una muy buena herramienta para acceder a una paleta de colores adecuada. Los colores que nos ofrece estánb basados en los estudios de la Dr. Cynthia A. Brewer y nos permite seleccionar escalas de color secuenciales, qualitativas o divergentes. Esta herramienta nos permite exportar los colores como una paleta de colores para GIMP (Software libre para trabajo vectorial), clases CSS o un array JavaScript con los colores en formato rgb.
 
-- Pero, ¿y si estas escalas no nos convencen o estamos cansados de verlas replicadas en todos los mapas? Podemos crear nuestra propia escala de color. A la hora de crear una escala existen multitud de factores a tener en cuenta, como son la interpolación de los colores, la manera en que aplicamos los propios colores en función de una determinada escala, o la corrección automática de la luminosidad. Ambas exceden los límites de este módulo pero a quien le interese puede echar un ojo a [este post](https://www.vis4.net/blog/2013/09/mastering-multi-hued-color-scales/) de Gregor Aisch o directamente a [esta herramienta](http://gka.github.io/palettes/#colors=lightyellow,orange,deeppink,darkred|steps=7|bez=1|coL=1) que él mismo desarrolló.
-  - [Gregor Aisch](https://twitter.com/driven_by_data) es el responsable de [Chroma.js](https://github.com/gka/chroma.js), una librería JavaScript llamada que permite crear escalas de color corregidas y ajustadas.
+- Pero, ¿y si estas escalas no nos convencen o estamos cansados de verlas replicadas en todos los mapas? Podemos crear nuestra propia escala de color. A la hora de crear una escala existen multitud de factores a tener en cuenta, como son la interpolación de los colores, la manera en que aplicamos los propios colores en función de una determinada escala, o la corrección automática de la luminosidad. Ambas exceden los límites de este módulo pero a quien le interese puede echar un ojo a [este post](https://www.vis4.net/blog/2013/09/mastering-multi-hued-color-scales/) de Gregor Aisch o directamente a [esta herramienta](http://gka.github.io/palettes/#colors=lightyellow,orange,deeppink,darkred|steps=7|bez=1|coL=1) que él mismo desarrolló. [Gregor Aisch](https://twitter.com/driven_by_data) es el responsable de [Chroma.js](https://github.com/gka/chroma.js), una librería JavaScript que permite crear escalas de color corregidas y ajustadas.
   
 - Para conocer más sobre escalas de color podeis visitar [este post](https://roadtolarissa.com/blog/2015/01/04/coloring-maps-with-d3/) de [Adam Pearce](https://twitter.com/adamrpearce) en el que explica las diferencias entre una escala de color lineal, quantitativa o quantil.
 
 ## <a name="sources">Fuentes de información</a>
 En las siguientes páginas se pueden descargar shapefiles y archivos _raster_ de carácter político, natural o cultural:
-- Centro de descargas del [CNIG](http://centrodedescargas.cnig.es/CentroDescargas/index.jsp). Tiene una interfaz un poco compleja al principio hasta que averiguamos cómo encontrar los datos que nos interesan. Es el centro de referencia a nivel nacional para descargar datos SIG. Tiene todos los vuelos con sus correspondientes ortofotos, datos ráster, modelos de elevación del terreno (incluso generados con lidar de 2x2m) o datos de tipo vectorial: información sobre carreteras, puertos, estaciones, etc.
+- Centro de descargas del [CNIG](http://centrodedescargas.cnig.es/CentroDescargas/index.jsp). Es el centro de referencia a nivel nacional para descargar datos SIG. Tiene todos los vuelos con sus correspondientes ortofotos, datos ráster, modelos de elevación del terreno (incluso generados con lidar de 2x2m) o datos de tipo vectorial: información sobre carreteras, puertos, estaciones, etc.
 
 -  Ministerio de Agricultura y Pesca, Alimentación y Medio Ambiente ([Magrama](http://www.mapama.gob.es/es/cartografia-y-sig/ide/descargas/default.aspx)). Datos sobre Agricultura, Biodiversidad, Calidad y evaluación ambiental, Agua y muchos más. Aquí podemos acceder de una manera sencilla a datos sobre parques naturales, cuencas hidrográficas o zonas con riesgo de inundación. Los datos suelen estar en formato shp o kmz/kml.
 
-- [Natura Earth Data](http://www.naturalearthdata.com/). Natural Earth es un proyecto open source donde podemos encontrar mucha información tanto de tipo vectorial como ráster. A pesar de que es un proyecto serio y consolidado, siempre debemos intentar acudir a las fuentes de datos oficiales. Aunque en Natural Earth encontramos archivos shape con códigos o datos sobre población, por ejemplo, estos no se actualizan con la frecuencia que lo hacen los diferentes organismos competentes.
+- [Natura Earth Data](http://www.naturalearthdata.com/) es un proyecto open source donde podemos encontrar mucha información tanto de tipo vectorial como ráster. A pesar de que es un proyecto serio y consolidado, siempre debemos intentar acudir a las fuentes de datos oficiales. Aunque en Natural Earth encontramos archivos shape con códigos o datos sobre población, por ejemplo, estos no se actualizan con la frecuencia que lo hacen los respectivos organismos oficiales.
 
 - [Diva-gis.org](http://www.diva-gis.org/gdata) nos ofrece datos GIS de cualquier país del mundo. Aunque son datos sin mucho nivel de detalle, nos pueden salvar cuando estamos realizando un mapa de algún país concreto y no encontramos datos sobre su contorno, ríos, carretas o límites administrativos.
 
@@ -49,7 +50,7 @@ En las siguientes páginas se pueden descargar shapefiles y archivos _raster_ de
 [Mapshaper](http://mapshaper.org/) es una herramienta open source desarrollada por [Mathew Bloch](https://github.com/mbloch). Además de una aplicación por [línea de comandos](https://github.com/mbloch/mapshaper/wiki/Introduction-to-the-Command-Line-Tool) que nos permite manipular archivos Shapefile, GeoJSON, TopoJSON, CSV entre otros formatos, también cuenta con una interfaz web. Podemos utilizar Mapshaper para reducir el peso de los archivos shapefile.   
 
 Cuando estamos trabajando en un mapa que va ser publicado en la web, el peso de los archivos es muy importante. Además, servicios como CARTO tienen un límite de almacenamiento gratuito.
-1. Para reducir el peso de un shapefile podemos arrastrar el conjunto de archivos comprimidos a la web.
+1. Para reducir el peso de un shapefile arrastramos y soltamos el conjunto de archivos comprimidos a la web.
   - . Si tienes los archivos sin comprimir, simplemente selecciona todos los archivos, `.dbf`, `.shp`, `.prj`, `.qpj`, `.shx` y comprimelos juntos.
 2. Seleccionamos `import`.
 3. Seleccionamos en el botón `Simplify`. Mapshaper nos ofrece varios algoritmos de simplificación (reduce el peso del archivo eliminando puntos). Podemos dejar las opciones por defecto → `Apply`.
@@ -58,12 +59,12 @@ Cuando estamos trabajando en un mapa que va ser publicado en la web, el peso de 
 6. Por último, exportamos el archivo en formato `shp`.
 
 
-## <a name="vector">Manipulación de archivos shp</a>
+## <a name="vector">Manipulación de shapefiles con QGIS</a>
 En este apartado vamos a aprender a realizar varias operaciones básicas con QGIS. Nuestro objetivo final será crear un mapa de la densidad de población por municipio en España.
 
 #### <a name="download-lineas-limite">Descarga de Líneas Límite</a>
 
-1. Descargamos los shapefiles oficiales del enlace del CNIG: **Centro de descargas del Instituto Geográfico Nacional** [Enlace ](http://centrodedescargas.cnig.es/CentroDescargas/equipamiento.do?method=mostrarEquipamiento). Aquí descargaremos los archivos oficiales en formato _shapefie_ (`shp`). Este archivo incluye más shapefiles de los que vamos a necesitar. Si hubiera algún problema con la descarga también se encuentra en la carpeta `shapefiles` del repositorio.    
+1. Descargamos los shapefiles oficiales del enlace del CNIG: **Centro de descargas del Instituto Geográfico Nacional** ([Enlace ](http://centrodedescargas.cnig.es/CentroDescargas/equipamiento.do?method=mostrarEquipamiento)). Este archivo incluye más shapefiles de los que vamos a necesitar. Si existe algún problema con la descarga los shapefiles necesarios para este módulo también se encuentra en la carpeta `shapefiles` del repositorio.    
 
 2. Descomprimimos los archivos. Vamos a trabajar con dos archivos incluidos en dos carpetas diferentes:   
  * `recintos_municipales_inspire_peninbal_etrs89`  
@@ -77,7 +78,7 @@ En este apartado vamos a aprender a realizar varias operaciones básicas con QGI
 #### <a name="from-etrs90-to-wgs84">Convertir un Shapefile a otro sistema de coordenadas</a>
 En nuestro panel de capas de la izquierda tenemos dos capas abiertas. Una capa representa todos los municipios españoles de la Península junto con Baleares, Ceuta y Melilla. La otra capa contiene los municipios de las Islas Canarias.  
 
-En este apartado vamos a aprender como unir estos dos archivos en uno solo. Para poder hacer operaciones entre dos archivos `shp` los dos deben estar bajo el mismo sistema de coordenadas. Para ello vamos a convertir el archivo de Canarias a `ETRS89`.
+En este apartado vamos a aprender como unir estos dos archivos en uno solo. Para poder hacer operaciones entre dos archivos `shp` los dos deben estar bajo el mismo sistema de coordenadas. Para ello vamos a convertir el archivo de Canarias al sistema de referencia de coordenadas `ETRS89`.
 1. Click derecho sobre el archivo de Canarias y seleccionamos **Guardar como...**
 2. En `Formato` seleccionamos `Archivo shape de ESRI`.
 3. Seleccionamos donde queremos guardar el archivo (asegurarnos de que tenemos permisos en la carpeta) y el nombre que queremos (por ejemplo `recintos_municipales_inspire_canarias_etrs89.shp`).
@@ -85,32 +86,32 @@ En este apartado vamos a aprender como unir estos dos archivos en uno solo. Para
 5. Nos aseguramos de que la pestaña `Añadir archivo guardado al mapa` se encuentra seleccionada. Al aceptar deberíamos tener una nueva capa añadida al proyecto, de lo contrario la añadimos manualmente. Podemos eliminar la capa de Canarias en WGS84.
 
 #### <a name="merge">Unir o mergear dos archivos shapefile en uno solo</a>
-A continuación, vamos a unir las dos capas en un sólo archivo shape. Es fundamental que el paso anterior se haya realizado correctamente ya que cualquier operación espacial entre dos o más capas requiere que estas se encuentren bajo el mismo sistema de coordenadas.   
+En este apartado vamos a obtener un único shapefile con todos los municipios de España (Península y Baleras y Canarias) mediante un proceso de **union** o `merge`. Es fundamental que el paso anterior se haya realizado correctamente y que los dos archivos con los que vamos a trabajar se encuentren bajo el mismo sistema de coordenadas.    
 1. Seleccionamos la pestaña `procesos` del menú superior. Seguidamente `Caja de Herramientas`. Y a continuación la herramienta `Merge Vector Layers` (podemos hacer una búsqueda con `merge`).
-2. Seleccionamos las dos capas y nombramos el archivo, por ejemplo `recintos_municipales_spain_etrs89`. Podemos comprobar como las dos se encuentran en `EPSG:4528`. Si las dos capas no tienen el mismo sisema de coordenadas el proceso fallará.
+2. Seleccionamos las dos capas y la ruta donde queremos guardar el resultado. Podemos nombrar el archivo de salida como `recintos_municipales_spain_etrs89` para diferenciarlo de las otras capas. Podemos comprobar como las dos se encuentran en `EPSG:4528`. Si las dos capas no tienen el mismo sisema de coordenadas el proceso fallará.
 ![merge_vector_layers](img/merge-vector-layers.png???)  
 
 3. Hacemos click sobre `Run` para realizar el `merge` entre los dos shapefiles. Deberíamos haber obtenido un nuevo archivo que incluye los polígonos de todos los municipios del país.
 
 #### <a name="get-ine-code">Extracción de información de un campo con la calculadora de campos</a>
-El siguiente paso que vamos a realizar es extraer el código del INE de los shapefiles de CNIG. Para acceder a la tabla de atributos de un shapefile tenemos que hacer click con el botón derecho sobre la capa o en el icono ![attribute_table](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/attribute_table.png). Se nos abrirá la siguiente ventana:   
+Vamos a extraer el código del INE de los shapefiles de CNIG. Para acceder a la tabla de atributos de un `shapefile` tenemos que hacer click con el botón derecho sobre la capa (`Abrir tabla de atributos`) o en el icono ![attribute_table](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/attribute_table.png). Se nos abrirá la siguiente ventana:   
 
  ![attribute_table_full](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/attribute_table_full_d.png)      
 
- Gracias a haber seleccionado la codificación `UTF-8` vemos como los nombres de los municipios presentan todos sus caracteres correctamente. Sobre esta tabla de atributos podemos realizar cálculos para filtrar en base a unas reglas, modificar o incluso crear nuevos campos.  
+ Gracias a haber seleccionado la codificación `UTF-8` vemos como los nombres de los municipios presentan todos sus caracteres correctamente. De lo contrario podemos cambiar la codificación en el panel `General` de las propiedades de la capa. Sobre esta tabla de atributos podemos realizar cálculos para filtrar en base a unas reglas, modificar o incluso crear nuevos campos.  
 
- En este caso nos interesa el campo `NATCODE`. El `NATCODE` es un código que identifica de manera única a cualquier polígono (en este caso a cualquier municipio). Podemos extraer el código del **INE** de este campo para poder cruzarlo con un csv que hayamos obtenido del INE. Nuestro objetivo es poder asociar unos valores específicos a cada municipio y para ello necesitamos un `id`.   
+ En este caso nos interesa el campo `NATCODE`. Este código identifica de manera única a cualquier polígono (en este caso a cualquier municipio). Podemos extraer el código del **INE** de este campo para poder cruzarlo con un csv que hayamos obtenido del INE. Nuestro objetivo es poder asociar unos valores a cada municipio desde otra tabla y para ello necesitamos un `id`.   
 
  Para éste propósito contamos con la `calculadora de campos` ![field_calculator_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/field_calculator_icon.png). Hacemos click sobre el icono. Vamos a extraer una cadena de texto de uno de los campos de la tabla de atributos y a crear una nueva columna con el resultado.
  
- 1. Introducimos el nombre que vamos a dar a la nueva columna en la tabla de atributos, por ejemplo `cod_ine`. Si queremos que el resultado de esta operación sea una cadena de texto y por lo tanto que conserve los ceros por la izquierda (`04004` vs ~~`4004`~~) tenemos que seleccionar el tipo de campo de salida como `Texto` (cadena). De lo contrario dejamos el valor `Numero enterio (int)` por defecto. Dado que en este tutorial vamos a subir después los datos a CARTO, podemos crear una columna en la que el código del INE tenga ceros por la izquierda y otra en la que no.
+ 1. Introducimos el nombre que vamos a dar a la nueva columna en la tabla de atributos, por ejemplo `cod_ine`. Si queremos que el resultado de esta operación sea una cadena de texto y por lo tanto que conserve los ceros por la izquierda (`04004` vs ~~`4004`~~) tenemos que seleccionar el tipo de campo de salida como `Texto` (cadena). De lo contrario dejamos el valor `Numero entero (int)` por defecto. Dado que en este tutorial vamos a subir después los datos a CARTO, podemos crear una columna en la que el código del INE tenga ceros por la izquierda y otra en la que no.
  
 
  2. Todos los desplegables de la derecha nos permiten ir construyendo una consulta a la tabla de atributos, una _query_, cuyo resultado será el nuevo campo. Además, nos permiten consultar la documentación asociada a cada función en la caja de la derecha.   
 
- 3. A continuación vamos a utilizar un método del desplegable `Cadena` (String) llamado `substring`. Vamos a extraer parte de ese código y generar un nuevo campo. Este método nos permitirá modificar el valor de una celda en base a tres argumentos:     
+ 3. A continuación vamos a utilizar un método del grupo `Cadena` (String) llamado `substring`. Vamos a extraer parte de ese código y generar un nuevo campo. Este método nos permitirá modificar el valor de una celda en base a tres argumentos:     
 
- 	* `cadena_de_entrada` → nombre de la columna de la cual queremos obtener nuestro nuevo campo.   
+ 	* `cadena_de_entrada` → nombre de la columna de la que queremos obtener nuestro nuevo campo.   
  	* `startpos` → posición inicial desde la que comenzaremos a extraer caracteres (empezando por el primero).
  	* `longitud` → longitud de la cadena a extraer.  
 
@@ -126,15 +127,16 @@ El siguiente paso que vamos a realizar es extraer el código del INE de los shap
   - Si vamos a subir este shapefile a CARTO es una buena oportunidad para utilizar [Mapshaper](#mapshaper) para reducir el peso del archivo.
 
 #### <a name="add-csv">Añadir un csv externo para asignar sus datos a polígonos</a>
-A continuación vamos a cargar los datos que queremos asociar a cada municipio. Vamos a utilizar los datos del [Revisión del padrón municipal a 1 de enero de 2017](http://www.ine.es/dynt3/inebase/index.htm?padre=525). Los datos vienen divididos por provincias pero el primero de ellos incluye los datos de todos los municipios. Este archivo requiere de una pequeña manipulación para extrar el código de municipio (`código de provincia + código de municipio`). Este cálculo podemos hacerlo en Excel, libre office o incluso en QGIS. Podéis procesar los datos y guardarlos como csv o bien utilizar el csv `poblacion_municipios.csv` de la carpeta `data` del repositorio.   
+A continuación vamos a cargar los datos que queremos asociar a cada municipio. Vamos a utilizar los datos de [Revisión del padrón municipal a 1 de enero de 2017](http://www.ine.es/dynt3/inebase/index.htm?padre=525). Si descargamos todo el conjunto de datos obtenemos una carpeta por provincia con sus respectivos municipios. La descarga tamibién incluye un archivo con todos los municipios que es el que nos interesa (suele llevar el sufijo `00`). Este archivo requiere de una pequeña manipulación para extrar el código de municipio (`código de provincia + código de municipio`). Este cálculo podemos hacerlo en Excel, libre office o incluso en QGIS. Podéis procesar los datos y guardarlos como csv o bien utilizar el csv `poblacion_municipios.csv` de la carpeta `data` del repositorio. Lamentablemente los datos vienen con el punto como separador de unidades de millar. Debemos eliminarlo ya que queremos los datos así `13409` y no así ~~`13.409`~~ ya que se confundiría el punto con el separador de decimales (sistema anglosajón).
 
- QGIS tiene una opción muy completa para añadir capas de texto delimitado (`csv`, `tsv`, etc.). Pero si queremos que los campos sean tratados como texto (y no elimine los ceros por la izquierda) necesitamos incluir un archivo en el mismo directorio cuya extensión incluya una `t` (de `type`) al final. Por ejemplo, si el archivo se llama `data.csv`, tenemos que crear un archivo llamado `data.csvt`. Dentro de este archivo debemos especificar la naturaleza de los campos: si queremos que todas las columnas sean tratadas como texto (`String`) este archivo deberá tener el siguiente contenido (`"String"`,`"String"`,...) una por cada columna. Si queremos que sean números enteros:`int`, decimales: `real`, etc.
+ QGIS tiene una opción muy completa para añadir capas de texto delimitado (`csv`, `tsv`, etc.). Pero si queremos que los campos sean tratados como texto (y no elimine los ceros por la izquierda) necesitamos incluir un archivo en el mismo directorio cuya extensión incluya una `t` (de `type`) al final. Por ejemplo, si el archivo se llama `data.csv`, tenemos que crear un archivo llamado `data.csvt`. Dentro de este archivo debemos especificar la naturaleza de los campos: si queremos que todas las columnas sean tratadas como texto (`String`) este archivo deberá tener el siguiente contenido (`"String"`,`"String"`,...) una por cada columna. Si una columna es un número entero:`int`, decimal: `real`, etc.
  
- Como esta opción es un poco complicada, aunque conviene conocerla, también podemos ahorrarnos este paso y añadir el csv como hemos hecho con los shapefiles, como si fuera una capa vectorial (añadir capa vectorial).
+ Aunque conviene conocer esta opción, también podemos ahorrarnos este paso y añadir el csv como hemos hecho con los shapefiles, como si fuera una capa vectorial (añadir capa vectorial).
  
 
 #### <a name="get-geometry-area">Extracción de información sobre geomtería del polígono con la calculadora de campos</a>
-La calculadora de campos de QGIS nos ofrece funciones relacionadas con la geomtría y la geodesia que vamos a utilizar. Estas funciones las podemos encontrar en el apartado **Geomgetría** de la calculadora de campos. A continuación vamos a ver cómo podemos calcular el área de un polígono.
+La calculadora de campos de QGIS nos ofrece funciones relacionadas con la geometría y la geodesia que vamos a utilizar. Estas funciones las podemos encontrar en el apartado **Geomegetría** de la calculadora de campos.
+Calcular el área de un polígono.
 1. El proceso es parecido al que seguimos para crear un nuevo campo.
 2. Seleccionamos el nombre de la nueva columna, su naturaleza.
 3. Por último, seleccionamos la opción $area del apartado Geometría (podemos utilizar el buscador).
@@ -143,6 +145,8 @@ La calculadora de campos de QGIS nos ofrece funciones relacionadas con la geomtr
 A continuación vamos a unir los datos del csv con los polígonos de los municipios. Hacemos click con el botón derecha sobre nuestro shapefile → propiedades → `Uniones` y en el icono ![add_join_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/add_join_icon.png). Seleccionamos la capa con la cual queremos hacer el `join` y los dos campos que cruzaremos. Podemos elegir qué campos queremos unir, en este caso sólo nos interesa el de población.   
 
 ![add_join](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/add_join.png)
+
+También podemos elegir qué campos del csv queremos añadir a la capa de origen y el prefijo del campo.
 
  Si abrimos la tabla de atributos veremos como hemos añadido un nuevo campo. **PERO** es un campo _virtual_, sólo existe temporalmente y no en el shapefile original. Además no podemos hacer operaciones sobre él. Si creamos una copia de este shapefile se añadirá el nuevo campo como uno más. **botón derecho** → **guardar como** → etc.
 
@@ -156,32 +160,33 @@ Introducimos la siguiente expresión:
 ```
 to_real( "data_POB00"  /  $area  ) * 10000  
 ```
- 
+(si ya hemos creado el campo area en el apartado anterior podemos seleccionar su columna o volver a utilizar la función $area).
+
 Dividimos la población entre el área del polígono. Lo multiplicamos por 10.000 para obtener habitantes por hectarea y _parseamos_ el dato a número real (decimal) para conservar los decimales con `to_real(...)`. Esta operación generará un nuevo campo con la densidad de población por municipio. A continuación
 sólo deberemos aplicar una escala de color a nuestros datos.   
 
 **NUNCA** debemos representar datos absolutos en un mapa. Siempre hemos de ponerlos en contexto con alguna otra variable.
 
 #### <a name="color-qgis">Escalas de color en QGIS</a>
-A continuación vamos aplicar una escala de color para poder apreciar la densidad de población de cada municipio. En **propiedades** de la capa → pestaña **estilo**  y en el desplegable seleccionamos → _graduado_. En el apartado columna seleccionamos nuestra variable `densidad`, elegimos la rampa o escala de color que queramos y en `Clasificar`. Si elegimos un buen número `Clases` podremos apreciar una mayor precisión en la distribución del color.  
+A continuación vamos aplicar una escala de color para poder apreciar la densidad de población de cada municipio. En **propiedades** de la capa → pestaña **estilo**  y en el desplegable seleccionamos → _graduado_. En el apartado columna seleccionamos nuestra variable `densidad`, elegimos la rampa o escala de color que queramos y pulsamos sobre `Clasificar`. Si elegimos un buen número `Clases` podremos apreciar mejor la distribución del color.  
 La opción **Modo** nos permite utilizar diferentes tipos de escalas. En nuestro contexto la opción `Quantil (cuenta igual)` o `Rupturas naturales (Jenks)` nos permiten apreciar mejor la distribución de los valores.
 
 ![quantil-vs-jenks](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/quantil-vs-jenks.png)
 
 #### <a name="print-composer">Utilizar el print composer de QGIS</a>
-Una vez tenemos nuestro mapa queremos crear una imagen a buena resolución de nuestro mapa, listo para publicar. Pulsamos en el icono ![print_composer_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/print_composer_icon.png).
+El print composer de QGIS es una herramienta que nos permite crear diseños para nuestros mapas y generar un mapa listo para publicar.
+1. Pulsamos en el icono ![print_composer_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/print_composer_icon.png).
 Podemos rellenar el campo nombre. A continuación en añadir mapa ![new_map_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/new_map_icon.png).    
-Con el ratón pulsado arrastramos desde una esquina hacia la contraria dibujando la extensión del `canvas`. Apareceá exactamente lo mismo que estabamos viendo en la ventana principal de `QGIS`. Existe la posibilidad de eliminar el fondo y exportar la imagen con transparencia (muy útil si luego vamos a trabajar con ella en algún otro programa). En la pestaña `Diseño`del menú derecho	y en el apartado `Configuración de página` seleccionamos `Cambiar`: **borde** y **relleno** transparente.   
-En la pestaña 	`Propiedades del elemento` deseleccionamos la pestaña `fondo`.   
-
+2. Con el ratón pulsado arrastramos desde una esquina hacia la contraria dibujando la extensión del `canvas`. Apareceá exactamente lo mismo que estabamos viendo en la ventana principal de `QGIS`. Existe la posibilidad de eliminar el fondo y exportar la imagen con transparencia (muy útil si luego vamos a trabajar con ella en algún otro programa). En la pestaña `Diseño`del menú derecho	y en el apartado `Configuración de página` seleccionamos `Cambiar`: **borde** y **relleno** transparente.   
+En la pestaña 	`Propiedades del elemento` deseleccionamos la pestaña `fondo`.
 ![map](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/map.png)
-Si queremos crear una composición que incluya las Islas Canarias cerca de la península tendríamos que crear dos mapas en nuestro `print composer`:
-- Eliminamos o deseleccionamos el mapa.
-- Sin cerrar esta ventana volvemos a la vista principal de QGIS. Hacemos zoom sobre la península.
-- Volvemos al diseño de impresión y añadimos un nuevo mapa. En esta ocasión debería aparecer sólo la península.
-- De nuevo en la ventana principal hacemos zoom sobre las Canarias. En el diseño de impresión añadimos un nuevo mapa. Aparecerán las Islas Canarias. Podemos ayudarnos de la herrmienta `Mover contenido del elemento` ![move_content_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/move_content_icon.png) para manejar mejor las dos capas y de las opciones bloquear del menú superior derecho `Elementos`.   
-- En el apartado `Propiedades principales` podemos servirnos de la opción `Escala` para asegurarnos de que los dos mapas conservan el mismo nivel de _zoom_.
-- Si queremos podemos añadir un rectángulo alrededor del archipiélago para remarcar la composición en `Añadir figura geométrica`.
+3. Si queremos crear una composición que incluya las Islas Canarias cerca de la península tendríamos que crear dos mapas en nuestro `print composer`:
+  - Eliminamos o deseleccionamos el mapa.
+  - Sin cerrar esta ventana volvemos a la vista principal de QGIS. Hacemos zoom sobre la península.
+  - Volvemos al diseño de impresión y añadimos un nuevo mapa. En esta ocasión debería aparecer sólo la península.
+  - De nuevo en la ventana principal hacemos zoom sobre las Canarias. En el diseño de impresión añadimos un nuevo mapa. Aparecerán las Islas Canarias. Podemos ayudarnos de la herrmienta `Mover contenido del elemento` ![move_content_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/move_content_icon.png) para manejar mejor las dos capas y de las opciones bloquear del menú superior derecho `Elementos`.   
+  - En el apartado `Propiedades principales` podemos servirnos de la opción `Escala` para asegurarnos de que los dos mapas conservan el mismo nivel de _zoom_.
+4. Si queremos podemos añadir un rectángulo alrededor del archipiélago para remarcar la composición en `Añadir figura geométrica`.
 
 
 ## <a name="carto">Crear un mapa con CARTO</a>
