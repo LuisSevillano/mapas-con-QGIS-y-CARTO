@@ -179,7 +179,7 @@ El print composer de QGIS es una herramienta que nos permite crear diseños para
 Podemos rellenar el campo nombre. A continuación en añadir mapa ![new_map_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/new_map_icon.png).    
 2. Con el ratón pulsado arrastramos desde una esquina hacia la contraria dibujando la extensión del `canvas`. Apareceá exactamente lo mismo que estabamos viendo en la ventana principal de `QGIS`. Existe la posibilidad de eliminar el fondo y exportar la imagen con transparencia (muy útil si luego vamos a trabajar con ella en algún otro programa). En la pestaña `Diseño`del menú derecho	y en el apartado `Configuración de página` seleccionamos `Cambiar`: **borde** y **relleno** transparente.   
 En la pestaña 	`Propiedades del elemento` deseleccionamos la pestaña `fondo`.
-![map](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/map.png)
+![map](img/choropleth.png)
 3. Si queremos crear una composición que incluya las Islas Canarias cerca de la península tendríamos que crear dos mapas en nuestro `print composer`:
   - Eliminamos o deseleccionamos el mapa.
   - Sin cerrar esta ventana volvemos a la vista principal de QGIS. Hacemos zoom sobre la península.
@@ -267,7 +267,7 @@ Este buscador tiene un limite para exportar de **20000** registros.
 
 A continuación vamos a subir los datos a CARTO como hemos visto en el apartado [correspondiente](#upload-carto). Creamos un nuevo mapa a partir del Dataset. En [este enlace](https://earthquake.usgs.gov/data/comcat/) podemos comprobar el significado de cada uno de los campos del `csv`. También existe un `Eartquakes.csv` disponible en la carpeta `data`.
 
-![map-points](img/map-points.png??)
+![map-points](img/map-points.png)
 
 A continuación vamos a ver que opciones nos ofrece CARTO para dar estilo a un mapa de puntos.
 
