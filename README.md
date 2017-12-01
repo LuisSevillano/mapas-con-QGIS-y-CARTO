@@ -63,7 +63,7 @@ En este apartado vamos a aprender a realizar varias operaciones básicas con QGI
 
 #### <a name="download-lineas-limite">Descarga de Líneas Límite</a>
 
-1. Descargamos los shapefiles oficiales del enlace del CNIG: **Centro de descargas del Instituto Geográfico Nacional** [Enlace ](http://centrodedescargas.cnig.es/CentroDescargas/equipamiento/lineas_limite.zip). Aquí descargaremos los archivos oficiales en formato _shapefie_ (`shp`). Este archivo incluye más shapefiles de los que vamos a necesitar. Si hubiera algún problema con la descarga también se encuentra en la carpeta `shapefiles` del repositorio.    
+1. Descargamos los shapefiles oficiales del enlace del CNIG: **Centro de descargas del Instituto Geográfico Nacional** [Enlace ](http://centrodedescargas.cnig.es/CentroDescargas/equipamiento.do?method=mostrarEquipamiento). Aquí descargaremos los archivos oficiales en formato _shapefie_ (`shp`). Este archivo incluye más shapefiles de los que vamos a necesitar. Si hubiera algún problema con la descarga también se encuentra en la carpeta `shapefiles` del repositorio.    
 
 2. Descomprimimos los archivos. Vamos a trabajar con dos archivos incluidos en dos carpetas diferentes:   
  * `recintos_municipales_inspire_peninbal_etrs89`  
@@ -160,7 +160,7 @@ to_real( "data_POB00"  /  $area  ) * 10000
 Dividimos la población entre el área del polígono. Lo multiplicamos por 10.000 para obtener habitantes por hectarea y _parseamos_ el dato a número real (decimal) para conservar los decimales con `to_real(...)`. Esta operación generará un nuevo campo con la densidad de población por municipio. A continuación
 sólo deberemos aplicar una escala de color a nuestros datos.   
 
-**NUNCA** debemos representar datos absolutos en un mapa. Siempre hemos de ponerlos en contexto con alguna otra variable relativa.
+**NUNCA** debemos representar datos absolutos en un mapa. Siempre hemos de ponerlos en contexto con alguna otra variable.
 
 #### <a name="color-qgis">Escalas de color en QGIS</a>
 A continuación vamos aplicar una escala de color para poder apreciar la densidad de población de cada municipio. En **propiedades** de la capa → pestaña **estilo**  y en el desplegable seleccionamos → _graduado_. En el apartado columna seleccionamos nuestra variable `densidad`, elegimos la rampa o escala de color que queramos y en `Clasificar`. Si elegimos un buen número `Clases` podremos apreciar una mayor precisión en la distribución del color.  
@@ -172,7 +172,7 @@ La opción **Modo** nos permite utilizar diferentes tipos de escalas. En nuestro
 Una vez tenemos nuestro mapa queremos crear una imagen a buena resolución de nuestro mapa, listo para publicar. Pulsamos en el icono ![print_composer_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/print_composer_icon.png).
 Podemos rellenar el campo nombre. A continuación en añadir mapa ![new_map_icon](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/new_map_icon.png).    
 Con el ratón pulsado arrastramos desde una esquina hacia la contraria dibujando la extensión del `canvas`. Apareceá exactamente lo mismo que estabamos viendo en la ventana principal de `QGIS`. Existe la posibilidad de eliminar el fondo y exportar la imagen con transparencia (muy útil si luego vamos a trabajar con ella en algún otro programa). En la pestaña `Diseño`del menú derecho	y en el apartado `Configuración de página` seleccionamos `Cambiar`: **borde** y **relleno** transparente.   
-En la pesataña 	`Propiedades del elemento` deseleccionamos la pestaña `fondo`.   
+En la pestaña 	`Propiedades del elemento` deseleccionamos la pestaña `fondo`.   
 
 ![map](https://raw.githubusercontent.com/LuisSevillano/QGIS-choropleth-workshow/master/img/map.png)
 Si queremos crear una composición que incluya las Islas Canarias cerca de la península tendríamos que crear dos mapas en nuestro `print composer`:
@@ -266,21 +266,21 @@ A continuación vamos a subir los datos a CARTO como hemos visto en el apartado 
 
 A continuación vamos a ver que opciones nos ofrece CARTO para dar estilo a un mapa de puntos.
 
-1. **POINTS**: este tipo de layout nos permite representar los datos en puntos. Es útil cuando queremos mostrar una distribución o controlar el tamaño de los círculos en función de los datos.
- - El estilo por defecto suele ser un stroke blanco con relleno rojo. Aunque no queramos dar estilo a este Dataset en función de su tabla de atributos, podríamos mejorar la apariencia de este Dataset simplemente aliminando el stroke o contorno del punto y haciendolo más pequeño. Apreciaremos mejor la distribución de los datos. Desde la pestaña de estilo dejamos el valor `aggregation` por defecto y nos centramos en **[2] Style**.
- - Aplicar el tamaño de los puntos en función de un campo de la tabla de atributos. En este caso, debemos seleccionar en `SIZE/COLOR` by value y seleccionar la columna que queramos de la tabla, por ejemplo el campo `mag` ([Magnitude for the event](https://earthquake.usgs.gov/data/comcat/data-eventterms.php#mag)). En esta opción podemos establecer el valor mínimo y el valor maximo que recibiran los _bubbles_ en función del valor de la tabla.
- - Si pinchamos en la barra de color también podemos colorear los puntos en función de los datos de la tabla.
- - En el apartado `BLENDING` controlamos el modo de fusión entre los círculos. Es útil cuando tenemos muchos datos y se solapan entre ellos.
+1. `POINTS`: este tipo de layout nos permite representar los datos en puntos. Es útil cuando queremos mostrar una distribución o controlar el tamaño de los círculos en función de los datos.
+   - El estilo por defecto suele ser un stroke blanco con relleno rojo. Aunque no queramos dar estilo a este Dataset en función de su tabla de atributos, podríamos mejorar la apariencia de este Dataset simplemente aliminando el stroke o contorno del punto y haciendolo más pequeño. Apreciaremos mejor la distribución de los datos. Desde la pestaña de estilo dejamos el valor `aggregation` por defecto y nos centramos en **[2] Style**.
+   - Aplicar el tamaño de los puntos en función de un campo de la tabla de atributos. En este caso, debemos seleccionar en `SIZE/COLOR` by value y seleccionar la columna que queramos de la tabla, por ejemplo el campo `mag` ([Magnitude for the event](https://earthquake.usgs.gov/data/comcat/data-eventterms.php#mag)). En esta opción podemos establecer el valor mínimo y el valor maximo que recibiran los _bubbles_ en función del valor de la tabla.
+   - Si pinchamos en la barra de color también podemos colorear los puntos en función de los datos de la tabla.
+   - En el apartado `BLENDING` controlamos el modo de fusión entre los círculos. Es útil cuando tenemos muchos datos y se solapan entre ellos.
  
- 2. `SQUARES`/`HEXBINS`: crea una regilla de cuadrados donde la intensidad del color refleja la cantidad de eventos (datos) que se concentran en el área que ocupa cada cuadrado. En las opciones de agregado podemos controlar este factor y en lugar de una cuenta, podemos hacer una suma, máximo o mínimo valor o media. Si elegimos alguna operación como suma, media debemos de nuevo elegir el campo en base al cual se va a realizar la operación. Estas opciones pueden ser muy útilessi por ejemplo tuvieramos datos de accidentes de tráfico y quisiéramos hayar la media o la suma total de heridos. Con los datos actuales podemos calcular la media de la magnitud de los terremotos en una región y encontrar si hay zonas que a pesar de registrar más terremotos estos suelen ser de menor magnitud y por lo tanto tener menos consecuencias.
- 
- 3. `ADMIN. REGIONS`: parecido al geoproceso _points int polygons_. Realiza el recuento de los eventos en función de las áreas administrativas que los contienen. Este algoritmo tiene el defecto de que asigna un color, aunque muy claro, a aquelas zonas para las que no hay datos, induciendo a error.
- 
- 4. `ANIMATED`: permite animar nuestros datos en función de alguno de sus campos. Si, como es el caso para el Dataset de terremotos, tenemos un campo en nuestra tabla que es de tipo fecha, podemos animar nuestros datos de manera cronológica, creando una animación. En este caso debemos seleccionar la columna en base a la que se realiza el órden en el campo `COLUMN` (para los terremotos es el campo `time`). Puede ser un id que hayamos asignado nosotros o un campo de tipo fecha. Esta opción también nos permite una opcion _heatmap_ para apreciar la concentración de valores.
- 
- 5. `PIXEL`: crea una foto fija de los datos aunque no permite seleccionar columnas de la tabla.
- 
- La mayoría de todas estas opciones pueden ser enriquecidas con pop-ups y leyendas. Sigue hasta el siguient apartado para aprender a utilizar los widgets de CARTO para filtrar los datos en tiempo real.
+2. `SQUARES`/`HEXBINS`: crea una regilla de cuadrados donde la intensidad del color refleja la cantidad de eventos (datos) que se concentran en el área que ocupa cada cuadrado. En las opciones de agregado podemos controlar este factor y en lugar de una cuenta, podemos hacer una suma, máximo o mínimo valor o media. Si elegimos alguna operación como suma, media debemos de nuevo elegir el campo en base al cual se va a realizar la operación. Estas opciones pueden ser muy útilessi por ejemplo tuvieramos datos de accidentes de tráfico y quisiéramos hayar la media o la suma total de heridos. Con los datos actuales podemos calcular la media de la magnitud de los terremotos en una región y encontrar si hay zonas que a pesar de registrar más terremotos estos suelen ser de menor magnitud y por lo tanto tener menos consecuencias.
+
+3. `ADMIN. REGIONS`: parecido al geoproceso _points int polygons_. Realiza el recuento de los eventos en función de las áreas administrativas que los contienen. Este algoritmo tiene el defecto de que asigna un color, aunque muy claro, a aquelas zonas para las que no hay datos, induciendo a error.
+
+4. `ANIMATED`: permite animar nuestros datos en función de alguno de sus campos. Si, como es el caso para el Dataset de terremotos, tenemos un campo en nuestra tabla que es de tipo fecha, podemos animar nuestros datos de manera cronológica, creando una animación. En este caso debemos seleccionar la columna en base a la que se realiza el órden en el campo `COLUMN` (para los terremotos es el campo `time`). Puede ser un id que hayamos asignado nosotros o un campo de tipo fecha. Esta opción también nos permite una opcion _heatmap_ para apreciar la concentración de valores.
+
+5. `PIXEL`: crea una foto fija de los datos aunque no permite seleccionar columnas de la tabla.
+
+La mayoría de todas estas opciones pueden ser enriquecidas con pop-ups y leyendas. Sigue hasta el siguient apartado para aprender a utilizar los widgets de CARTO para filtrar los datos en tiempo real.
  
  
 #### <a name="widget-carto">Añadir widgets en CARTO</a>
